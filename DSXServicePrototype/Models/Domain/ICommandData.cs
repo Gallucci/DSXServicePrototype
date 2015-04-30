@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public interface ICommand
+    public interface ICommandData
     {
-        string WriteCommand(SerializerFormat format);
+        string WriteData();
     }
 }

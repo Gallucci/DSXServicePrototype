@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace DSXServicePrototype.Models.Domain
 {
     public class DSXCommand : ICommand
-    {
-        private int IdLocGroupNumber { get; set; }
-        private int IdUdfFieldNumber { get; set; }
-        private string IdUdfFieldData { get; set; }
+    {        
+        public int IdLocGroupNumber { get; set; }
+        public int IdUdfFieldNumber { get; set; }
+        public string IdUdfFieldData { get; set; }
 
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
@@ -47,7 +47,7 @@ namespace DSXServicePrototype.Models.Domain
         public bool? IsRevokeAllTempAccessLevels { get; set; }
 
         private DSXCommand(CommandBuilder builder)
-        {
+        {            
             IdLocGroupNumber = builder.IdLocGroupNumber;
             IdUdfFieldNumber = builder.IdUdfFieldNumber;
             IdUdfFieldData = builder.IdUdfFieldData;
@@ -82,96 +82,9 @@ namespace DSXServicePrototype.Models.Domain
             IsRevokeAllTempAccessLevels = builder.IsRevokeAllTempAccessLevels;
         }                
 
-        public string WriteCommand()
+        public string WriteCommand(SerializerFormat format)
         {
-            var dataBuilder = new DSXData.DSXDataBuilder(IdLocGroupNumber, IdUdfFieldNumber, IdUdfFieldData)                
-                .OpenTable("Names")
-                .AddField("FName", FirstName)
-                .AddField("LName", LastName)
-                .AddField("Company", Company)
-                .AddField("Visitor", IsVisitor)
-                .AddField("Trace", IsTrace)
-                .AddField("Notes", NameNotes)
-                .WriteToTable();
-            
-            if (UdfData.Count() > 0)
-            {                
-                foreach (var udf in UdfData)
-                {
-                    dataBuilder
-                        .OpenTable("UDF")
-                        .AddField("UdfNum", udf.Key)
-                        .AddField("UdfText", udf.Value)
-                        .WriteToTable();
-                }                                    
-            }
-
-            if(ImageType != null && ImageFileName != null)
-            {
-                dataBuilder.OpenTable("Images")
-                    .AddField("ImgType", ImageType)
-                    .AddField("FileName", ImageFileName)
-                    .WriteToTable();
-            }
-
-            dataBuilder.OpenTable("Cards")
-                .AddField("Code", Code)
-                .AddField("ReplaceCode", ReplacementCode)
-                .AddField("PIN", Pin)
-                .AddField("StartDate", StartDate)
-                .AddField("StopDate", StopDate)
-                .AddField("CardNum", CardNumber)
-                .AddField("NumUses", NumberOfUses)
-                .AddField("GTour", IsGuardTour)
-                .AddField("APB", IsAntiPassBack);
-
-            if (IsRevokeAllAccessLevels.HasValue)
-            {
-                if(IsRevokeAllAccessLevels.Value == true)
-                    dataBuilder.AddField("ClearAcl", "", true);
-            }
-
-            if(IsRevokeAllTempAccessLevels.HasValue)
-            {
-                if (IsRevokeAllTempAccessLevels.Value == true)
-                    dataBuilder.AddField("ClearTempAcl", "", true);
-            }
-
-            foreach(var acl in GrantAccessLevels)
-            {
-                dataBuilder
-                    .AddField("AddAcl", acl);
-            }
-
-            foreach(var acl in GrantTempAccessLevels)
-            {
-                dataBuilder
-                    .AddField("AddTempAcl", acl);
-            }
-
-            foreach (var acl in RevokeAccessLevels)
-            {
-                dataBuilder
-                    .AddField("DelAcl", acl);
-            }
-
-            foreach (var acl in RevokeTempAccessLevels)
-            {
-                dataBuilder
-                    .AddField("DelTempAcl", acl);
-            }
-
-            dataBuilder   
-                .AddField("AclStartDate", TempAccessStartDate)
-                .AddField("AclStopDate", TempAccessStopDate)
-                .AddField("Loc", Location)
-                .AddField("OLL", OutputLinkingLevel)
-                .AddField("Notes", CardNotes)
-                .WriteToTable();
-
-            // Build the product
-            var data = dataBuilder.Build();
-            return data.WriteData();
+            return CommandSerializerFactory.GetCommandSerializer(this, format).Serialize(); 
         }
         
         internal sealed class CommandBuilder

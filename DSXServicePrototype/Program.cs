@@ -34,13 +34,13 @@ namespace DSXServicePrototype
             // Build a Revoke Access command
             var revokeAccessCmd = new DSXCommand.CommandBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
                 .AddUdfData(udfData)
-                .RevokeAccessLevel("MZMO Student")                                
+                .RevokeAccessLevel("MZMO Student")
                 .Build();
 
             // Build a Change PIN command
             var changePinCmd = new DSXCommand.CommandBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
                 .AddUdfData(udfData)
-                .SetPin(3434)                
+                .SetPin(3434)
                 .Build();
 
             // Build a replace code command
@@ -49,10 +49,10 @@ namespace DSXServicePrototype
                 .ReplaceCode(123213213132)                
                 .Build();
             
-            //Console.Write(grantAccessCmd.WriteCommand());
-            //Console.Write(revokeAccessCmd.WriteCommand());
-            Console.Write(changePinCmd.WriteCommand());
-            //Console.Write(replaceCodeCmd.WriteCommand());
+            Console.Write(grantAccessCmd.WriteCommand(SerializerFormat.DML));
+            Console.Write(revokeAccessCmd.WriteCommand(SerializerFormat.JSON));
+            Console.Write(changePinCmd.WriteCommand(SerializerFormat.JSON));
+            Console.Write(replaceCodeCmd.WriteCommand(SerializerFormat.XML));
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey(); 

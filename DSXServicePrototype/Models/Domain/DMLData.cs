@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public class DSXData
+    public class DMLData : ICommandData
     {
         private StringBuilder output;
 
-        private DSXData(DSXDataBuilder builder)
+        private DMLData(DMLDataBuilder builder)
         {
             output = builder.Output;
         }
@@ -20,19 +20,19 @@ namespace DSXServicePrototype.Models.Domain
             return output.ToString();
         }
 
-        public class DSXDataBuilder
+        public class DMLDataBuilder
         {
             // Properties
             internal StringBuilder Output { get; private set; }
 
             // Constructors
-            public DSXDataBuilder(int locGroupNum, int udfFieldNum, string udfFieldData)
+            public DMLDataBuilder(int locGroupNum, int udfFieldNum, string udfFieldData)
             {
                 Output = new StringBuilder();
                 Output.AppendLine(string.Format("I L{0} U{1} ^{2}^^^", locGroupNum.ToString(), udfFieldNum.ToString(), udfFieldData));
             }
 
-            public DSXDataBuilder OpenTable(string tableName)
+            public DMLDataBuilder OpenTable(string tableName)
             {
                 Output.AppendLine(string.Format("T {0}", tableName));
                 return (this);
@@ -52,7 +52,7 @@ namespace DSXServicePrototype.Models.Domain
                   return "0";
             }
 
-            public DSXDataBuilder AddField<T>(string fieldName, T fieldValue, bool allowEmptyValue = false)
+            public DMLDataBuilder AddField<T>(string fieldName, T fieldValue, bool allowEmptyValue = false)
             {
                 string value = string.Empty;
 
@@ -86,33 +86,33 @@ namespace DSXServicePrototype.Models.Domain
                 return (this);
             }
 
-            public DSXDataBuilder WriteToTable()
+            public DMLDataBuilder WriteToTable()
             {
                 Output.AppendLine("W");
                 return (this);
             }
 
-            public DSXDataBuilder DeleteFromTable()
+            public DMLDataBuilder DeleteFromTable()
             {
                 Output.AppendLine("D");
                 return (this);
             }
 
-            public DSXDataBuilder PrintTable()
+            public DMLDataBuilder PrintTable()
             {
                 Output.AppendLine("P");
                 return (this);
             }
 
-            public DSXDataBuilder UpdateTable()
+            public DMLDataBuilder UpdateTable()
             {
                 Output.AppendLine("U");
                 return (this);
             }
 
-            public DSXData Build()
+            public DMLData Build()
             {
-                return new DSXData(this);
+                return new DMLData(this);
             }
         }
     }

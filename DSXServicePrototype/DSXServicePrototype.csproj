@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,16 +45,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Domain\DSXDataFormat.cs" />
+    <Compile Include="Models\Domain\CommandSerializerFactory.cs" />
+    <Compile Include="Models\Domain\DMLData.cs" />
+    <Compile Include="Models\Domain\DMLCommandSerializer.cs" />
     <Compile Include="Models\Domain\DSXCommand.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\Domain\ICommand.cs" />
+    <Compile Include="Models\Domain\ICommandData.cs" />
+    <Compile Include="Models\Domain\ICommandSerializer.cs" />
+    <Compile Include="Models\Domain\JSONCommandSerializer.cs" />
+    <Compile Include="Models\Domain\XMLCommandSerializer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
