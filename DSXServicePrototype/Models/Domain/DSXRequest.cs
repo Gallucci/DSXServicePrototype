@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public class DSXRequest : IRequest
+    public class DSXRequest
     {        
         public int IdLocGroupNumber { get; set; }
         public int IdUdfFieldNumber { get; set; }
@@ -82,11 +82,6 @@ namespace DSXServicePrototype.Models.Domain
             IsRevokeAllTempAccessLevels = builder.IsRevokeAllTempAccessLevels;
         }                
 
-        public string WriteRequest(SerializerFormat format)
-        {
-            return RequestSerializerFactory.GetCommandSerializer(this, format).Serialize(); 
-        }
-        
         internal sealed class RequestBuilder
         {
             public int IdLocGroupNumber { get; private set; }
@@ -342,7 +337,7 @@ namespace DSXServicePrototype.Models.Domain
                 return this;
             }
 
-            public IRequest Build()
+            public DSXRequest Build()
             {
                 return new DSXRequest(this);
             }

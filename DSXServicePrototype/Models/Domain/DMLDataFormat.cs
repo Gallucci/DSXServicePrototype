@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public class DMLRequestData : IRequestData
+    public class DMLDataFormat : IDataFormat
     {
         private StringBuilder output;
 
-        private DMLRequestData(DataBuilder builder)
+        private DMLDataFormat(FormatBuilder builder)
         {
             output = builder.Output;
         }
@@ -20,19 +20,19 @@ namespace DSXServicePrototype.Models.Domain
             return output.ToString();
         }
 
-        internal sealed class DataBuilder
+        internal sealed class FormatBuilder
         {
             // Properties
             public StringBuilder Output { get; private set; }
 
             // Constructors
-            public DataBuilder(int locGroupNum, int udfFieldNum, string udfFieldData)
+            public FormatBuilder(int locGroupNum, int udfFieldNum, string udfFieldData)
             {
                 Output = new StringBuilder();
                 Output.AppendLine(string.Format("I L{0} U{1} ^{2}^^^", locGroupNum.ToString(), udfFieldNum.ToString(), udfFieldData));
             }
 
-            public DataBuilder OpenTable(string tableName)
+            public FormatBuilder OpenTable(string tableName)
             {
                 Output.AppendLine(string.Format("T {0}", tableName));
                 return (this);
@@ -52,7 +52,7 @@ namespace DSXServicePrototype.Models.Domain
                   return "0";
             }
 
-            public DataBuilder AddField<T>(string fieldName, T fieldValue, bool allowEmptyValue = false)
+            public FormatBuilder AddField<T>(string fieldName, T fieldValue, bool allowEmptyValue = false)
             {
                 string value = string.Empty;
 
@@ -86,7 +86,7 @@ namespace DSXServicePrototype.Models.Domain
                 return (this);
             }
 
-            public DataBuilder AddField<T>(IDictionary<string, T> fieldSet, bool allowEmptyValues = false)
+            public FormatBuilder AddField<T>(IDictionary<string, T> fieldSet, bool allowEmptyValues = false)
             {
                 foreach(var field in fieldSet)
                 {
@@ -95,33 +95,33 @@ namespace DSXServicePrototype.Models.Domain
                 return (this);
             }
 
-            public DataBuilder CloseTableWithWrite()
+            public FormatBuilder CloseTableWithWrite()
             {
                 Output.AppendLine("W");
                 return (this);
             }
 
-            public DataBuilder CloseTableWithDelete()
+            public FormatBuilder CloseTableWithDelete()
             {
                 Output.AppendLine("D");
                 return (this);
             }
 
-            public DataBuilder CloseTableWithPrint()
+            public FormatBuilder CloseTableWithPrint()
             {
                 Output.AppendLine("P");
                 return (this);
             }
 
-            public DataBuilder CloseTableWithUpdate()
+            public FormatBuilder CloseTableWithUpdate()
             {
                 Output.AppendLine("U");
                 return (this);
             }
 
-            public IRequestData Build()
+            public IDataFormat Build()
             {
-                return new DMLRequestData(this);
+                return new DMLDataFormat(this);
             }
         }
     }

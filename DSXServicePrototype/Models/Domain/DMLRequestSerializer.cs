@@ -17,7 +17,7 @@ namespace DSXServicePrototype.Models.Domain
 
         public string Serialize()
         {
-            var dataBuilder = new DMLRequestData.DataBuilder(request.IdLocGroupNumber, request.IdUdfFieldNumber, request.IdUdfFieldData)
+            var dataBuilder = new DMLDataFormat.FormatBuilder(request.IdLocGroupNumber, request.IdUdfFieldNumber, request.IdUdfFieldData)
                 .OpenTable("Names")
                 .AddField("FName", request.FirstName)
                 .AddField("LName", request.LastName)
@@ -102,7 +102,10 @@ namespace DSXServicePrototype.Models.Domain
                 .AddField("Notes", request.CardNotes)
                 .CloseTableWithWrite();
 
+            // Build the data format
             var data = dataBuilder.Build();
+
+            // Write out the data
             return data.WriteData();
         }
     }

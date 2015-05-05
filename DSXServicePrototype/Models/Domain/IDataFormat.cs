@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public interface IRequestData
+    public interface IDataFormat
     {
         string WriteData();
     }
