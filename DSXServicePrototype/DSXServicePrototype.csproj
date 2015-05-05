@@ -45,17 +45,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Domain\CommandSerializerFactory.cs" />
-    <Compile Include="Models\Domain\DMLData.cs" />
-    <Compile Include="Models\Domain\DMLCommandSerializer.cs" />
-    <Compile Include="Models\Domain\DSXCommand.cs">
+    <Compile Include="Models\Domain\RequestSerializerFactory.cs" />
+    <Compile Include="Models\Domain\DMLRequestData.cs" />
+    <Compile Include="Models\Domain\DMLRequestSerializer.cs" />
+    <Compile Include="Models\Domain\DSXRequest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Models\Domain\ICommand.cs" />
-    <Compile Include="Models\Domain\ICommandData.cs" />
-    <Compile Include="Models\Domain\ICommandSerializer.cs" />
-    <Compile Include="Models\Domain\JSONCommandSerializer.cs" />
-    <Compile Include="Models\Domain\XMLCommandSerializer.cs" />
+    <Compile Include="Models\Domain\IRequest.cs" />
+    <Compile Include="Models\Domain\IRequestData.cs" />
+    <Compile Include="Models\Domain\IRequestSerializer.cs" />
+    <Compile Include="Models\Domain\JSONRequestSerializer.cs" />
+    <Compile Include="Models\Domain\XMLRequestSerializer.cs" />
+    <Compile Include="Models\Service\RequestService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

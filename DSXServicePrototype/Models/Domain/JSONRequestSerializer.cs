@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public class JSONCommandSerializer : ICommandSerializer
+    public class JSONRequestSerializer : IRequestSerializer
     {
-        private DSXCommand command;
+        private DSXRequest request;
 
-        public JSONCommandSerializer(DSXCommand command)
+        public JSONRequestSerializer(DSXRequest request)
         {
-            this.command = command;
+            this.request = request;
         }
 
         public string Serialize()
         {
-            string json = JsonConvert.SerializeObject(command, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(request, Formatting.Indented);
             return json;
         }
     }

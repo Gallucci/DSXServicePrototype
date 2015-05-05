@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public class DSXCommand : ICommand
+    public class DSXRequest : IRequest
     {        
         public int IdLocGroupNumber { get; set; }
         public int IdUdfFieldNumber { get; set; }
@@ -46,7 +46,7 @@ namespace DSXServicePrototype.Models.Domain
         public bool? IsRevokeAllAccessLevels { get; set; }
         public bool? IsRevokeAllTempAccessLevels { get; set; }
 
-        private DSXCommand(CommandBuilder builder)
+        private DSXRequest(RequestBuilder builder)
         {            
             IdLocGroupNumber = builder.IdLocGroupNumber;
             IdUdfFieldNumber = builder.IdUdfFieldNumber;
@@ -82,12 +82,12 @@ namespace DSXServicePrototype.Models.Domain
             IsRevokeAllTempAccessLevels = builder.IsRevokeAllTempAccessLevels;
         }                
 
-        public string WriteCommand(SerializerFormat format)
+        public string WriteRequest(SerializerFormat format)
         {
-            return CommandSerializerFactory.GetCommandSerializer(this, format).Serialize(); 
+            return RequestSerializerFactory.GetCommandSerializer(this, format).Serialize(); 
         }
         
-        internal sealed class CommandBuilder
+        internal sealed class RequestBuilder
         {
             public int IdLocGroupNumber { get; private set; }
             public int IdUdfFieldNumber { get; private set; }
@@ -127,7 +127,7 @@ namespace DSXServicePrototype.Models.Domain
             public bool? IsRevokeAllAccessLevels { get; set; }
             public bool? IsRevokeAllTempAccessLevels { get; set; }
 
-            public CommandBuilder(string firstName, string lastName, string company, long code, int locGroupNumber, int udfFieldNumber, string udfFieldData)
+            public RequestBuilder(string firstName, string lastName, string company, long code, int locGroupNumber, int udfFieldNumber, string udfFieldData)
             {
                 // Identification data
                 IdLocGroupNumber = locGroupNumber;
@@ -149,30 +149,30 @@ namespace DSXServicePrototype.Models.Domain
                 RevokeTempAccessLevels = new List<string>();
             }
 
-            public CommandBuilder IsAVisitor()
+            public RequestBuilder IsAVisitor()
             {
                 IsVisitor = true;
                 return this;
             }
 
-            public CommandBuilder IsTraced()
+            public RequestBuilder IsTraced()
             {
                 IsTrace = true;
                 return this;
             }
 
-            public CommandBuilder WriteNoteForPerson(string note)
+            public RequestBuilder WriteNoteForPerson(string note)
             {
                 NameNotes = note;
                 return this;
             }
 
-            public CommandBuilder AddUdfData(int udfNum, string udfData)
+            public RequestBuilder AddUdfData(int udfNum, string udfData)
             {
                 UdfData.Add(new KeyValuePair<int, string>(udfNum, udfData));
                 return this;
             }
-            public CommandBuilder AddUdfData(IDictionary<int, string> dataSet)
+            public RequestBuilder AddUdfData(IDictionary<int, string> dataSet)
             {
                 foreach(var data in dataSet)
                 {
@@ -181,63 +181,63 @@ namespace DSXServicePrototype.Models.Domain
                 return this;
             }
 
-            public CommandBuilder SetImage(int imageType, string fileName)
+            public RequestBuilder SetImage(int imageType, string fileName)
             {
                 ImageType = imageType;
                 ImageFileName = fileName;
                 return this;
             }
 
-            public CommandBuilder SetPin(int pin)
+            public RequestBuilder SetPin(long pin)
             {
                 Pin = pin;
                 return this;
             }
 
-            public CommandBuilder AccessBeginsOn(DateTime startDate)
+            public RequestBuilder AccessBeginsOn(DateTime startDate)
             {
                 StartDate = startDate;
                 return this;
             }
 
-            public CommandBuilder AccessStopsOn(DateTime stopDate)
+            public RequestBuilder AccessStopsOn(DateTime stopDate)
             {
                 StopDate = stopDate;
                 return this;
             }
 
-            public CommandBuilder SetCardNumber(string number)
+            public RequestBuilder SetCardNumber(string number)
             {
                 CardNumber = number;
                 return this;
             }
 
-            public CommandBuilder SetMaximumUses(int number)
+            public RequestBuilder SetMaximumUses(int number)
             {
                 NumberOfUses = number;
                 return this;
             }
 
-            public CommandBuilder IsAGuardTourCard()
+            public RequestBuilder IsAGuardTourCard()
             {
                 IsGuardTour = true;
                 return this;
             }
 
-            public CommandBuilder OverridesAntiPassBack()
+            public RequestBuilder OverridesAntiPassBack()
             {
                 IsAntiPassBack = true;
                 return this;
             }
 
-            public CommandBuilder GrantAccessLevel(string aclName)
+            public RequestBuilder GrantAccessLevel(string aclName)
             {
                 if (!string.IsNullOrEmpty(aclName))
                     GrantAccessLevels.Add(aclName);    
                 
                 return this;
             }
-            public CommandBuilder GrantAccessLevel(IEnumerable<string> aclSet)
+            public RequestBuilder GrantAccessLevel(IEnumerable<string> aclSet)
             {
                 foreach (var aclName in aclSet)
                 {
@@ -246,14 +246,14 @@ namespace DSXServicePrototype.Models.Domain
                 return this;
             }
 
-            public CommandBuilder GrantTempAccessLevel(string aclName)
+            public RequestBuilder GrantTempAccessLevel(string aclName)
             {
                 if (!string.IsNullOrEmpty(aclName))
                     GrantTempAccessLevels.Add(aclName);                
                 
                 return this;
             }
-            public CommandBuilder GrantTempAccessLevel(IEnumerable<string> aclSet)
+            public RequestBuilder GrantTempAccessLevel(IEnumerable<string> aclSet)
             {
                 foreach (var aclName in aclSet)
                 {
@@ -262,14 +262,14 @@ namespace DSXServicePrototype.Models.Domain
                 return this;
             }
 
-            public CommandBuilder RevokeAccessLevel(string aclName)
+            public RequestBuilder RevokeAccessLevel(string aclName)
             {
                 if (!string.IsNullOrEmpty(aclName))
                     RevokeAccessLevels.Add(aclName);
 
                 return this;
             }
-            public CommandBuilder RevokeAccessLevel(IEnumerable<string> aclSet)
+            public RequestBuilder RevokeAccessLevel(IEnumerable<string> aclSet)
             {
                 foreach (var aclName in aclSet)
                 {
@@ -278,14 +278,14 @@ namespace DSXServicePrototype.Models.Domain
                 return this;
             }
 
-            public CommandBuilder RevokeTempAccessLevel(string aclName)
+            public RequestBuilder RevokeTempAccessLevel(string aclName)
             {
                 if (!string.IsNullOrEmpty(aclName))
                     GrantTempAccessLevels.Add(aclName);
 
                 return this;
             }
-            public CommandBuilder RevokeTempAccessLevel(IEnumerable<string> aclSet)
+            public RequestBuilder RevokeTempAccessLevel(IEnumerable<string> aclSet)
             {
                 foreach (var aclName in aclSet)
                 {
@@ -294,57 +294,57 @@ namespace DSXServicePrototype.Models.Domain
                 return this;
             }
 
-            public CommandBuilder TemporaryAccessBeginsOn(DateTime startDate)
+            public RequestBuilder TempAccessBeginsOn(DateTime startDate)
             {
                 TempAccessStartDate = startDate;
                 return this;
             }
 
-            public CommandBuilder TemporaryAccessStopsOn(DateTime stopDate)
+            public RequestBuilder TempAccessStopsOn(DateTime stopDate)
             {
                 TempAccessStopDate = stopDate;
                 return this;
             }
 
-            public CommandBuilder SetLocationNumber(int number)
+            public RequestBuilder SetLocationNumber(int number)
             {
                 Location = number;
                 return this;
             }
 
-            public CommandBuilder SetOutputLinkingLevel(int number)
+            public RequestBuilder SetOutputLinkingLevel(int number)
             {
                 OutputLinkingLevel = number;
                 return this;
             }
 
-            public CommandBuilder WriteCardNote(string note)
+            public RequestBuilder WriteCardNote(string note)
             {
                 CardNotes = note;
                 return this;
             }
 
-            public CommandBuilder RevokeAllAccessLevels()
+            public RequestBuilder RevokeAllAccessLevels()
             {
                 IsRevokeAllAccessLevels = true;
                 return this;
             }
 
-            public CommandBuilder RevokeAllTempAccessLevels()
+            public RequestBuilder RevokeAllTempAccessLevels()
             {
                 IsRevokeAllTempAccessLevels = true;
                 return this;
             }
 
-            public CommandBuilder ReplaceCode(double code)
+            public RequestBuilder ReplaceCode(double code)
             {
                 ReplacementCode = code;
                 return this;
             }
 
-            public ICommand Build()
+            public IRequest Build()
             {
-                return new DSXCommand(this);
+                return new DSXRequest(this);
             }
         }
     }

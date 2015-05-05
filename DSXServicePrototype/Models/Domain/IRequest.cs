@@ -6,15 +6,8 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public enum SerializerFormat
+    public interface IRequest
     {
-        DML,
-        JSON,
-        XML
-    }
-
-    public interface ICommandSerializer
-    {
-        string Serialize();
+        string WriteRequest(SerializerFormat format);
     }
 }

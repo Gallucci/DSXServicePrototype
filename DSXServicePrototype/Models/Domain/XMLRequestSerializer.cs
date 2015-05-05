@@ -5,17 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using System.Runtime.Serialization;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    class XMLCommandSerializer : ICommandSerializer
+    class XMLRequestSerializer : IRequestSerializer
     {
-        private DSXCommand command;
+        private DSXRequest request;
 
-        public XMLCommandSerializer(DSXCommand command)
+        public XMLRequestSerializer(DSXRequest request)
         {
-            this.command = command;
+            this.request = request;
         }
 
         public string Serialize()

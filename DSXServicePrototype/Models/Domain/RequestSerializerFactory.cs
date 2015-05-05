@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.Domain
 {
-    public static class CommandSerializerFactory
+    public static class RequestSerializerFactory
     {
-        public static ICommandSerializer GetCommandSerializer(DSXCommand command, SerializerFormat format)
+        public static IRequestSerializer GetCommandSerializer(DSXRequest command, SerializerFormat format)
         {
             switch(format)
             {
                 case SerializerFormat.JSON:
-                    return new JSONCommandSerializer(command);
+                    return new JSONRequestSerializer(command);
                 case SerializerFormat.XML:
-                    return new XMLCommandSerializer(command);
+                    return new XMLRequestSerializer(command);
             }
 
             // DML is the default serializer type
-            return new DMLCommandSerializer(command);            
+            return new DMLRequestSerializer(command);            
         }
     }
 }

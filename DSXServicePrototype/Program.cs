@@ -21,8 +21,8 @@ namespace DSXServicePrototype
                 {2, "90202705124"}
             };
 
-            // Build a Grant Access command
-            var grantAccessCmd = new DSXCommand.CommandBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
+            // Build a Grant Access request
+            var grantAccess = new DSXRequest.RequestBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
                 .AccessBeginsOn(new DateTime(2015, 1, 15).AddHours(10))
                 .AccessStopsOn(new DateTime(2015, 1, 18).AddHours(17))                                
                 .GrantAccessLevel("MZMO Student")
@@ -31,28 +31,28 @@ namespace DSXServicePrototype
                 .SetMaximumUses(9999)
                 .Build();
 
-            // Build a Revoke Access command
-            var revokeAccessCmd = new DSXCommand.CommandBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
+            // Build a Revoke Access request
+            var revokeAccess = new DSXRequest.RequestBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
                 .AddUdfData(udfData)
                 .RevokeAccessLevel("MZMO Student")
                 .Build();
 
-            // Build a Change PIN command
-            var changePinCmd = new DSXCommand.CommandBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
+            // Build a Change PIN request
+            var changePin = new DSXRequest.RequestBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
                 .AddUdfData(udfData)
                 .SetPin(3434)
                 .Build();
 
-            // Build a replace code command
-            var replaceCodeCmd = new DSXCommand.CommandBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
+            // Build a replace code request
+            var replaceCode = new DSXRequest.RequestBuilder("Test", "Dummy", "MZMO Student", 90202705124, 1, 2, "90202705124")
                 .AddUdfData(udfData)
                 .ReplaceCode(123213213132)                
                 .Build();
             
-            Console.Write(grantAccessCmd.WriteCommand(SerializerFormat.DML));
-            Console.Write(revokeAccessCmd.WriteCommand(SerializerFormat.JSON));
-            Console.Write(changePinCmd.WriteCommand(SerializerFormat.JSON));
-            Console.Write(replaceCodeCmd.WriteCommand(SerializerFormat.XML));
+            Console.Write(grantAccess.WriteRequest(SerializerFormat.DML));
+            Console.Write(revokeAccess.WriteRequest(SerializerFormat.JSON));
+            Console.Write(changePin.WriteRequest(SerializerFormat.JSON));
+            Console.Write(replaceCode.WriteRequest(SerializerFormat.XML));
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey(); 
