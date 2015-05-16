@@ -45,6 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\DataAccess\DSX\BaseRequest.cs" />
+    <Compile Include="Models\DataAccess\DSX\BaseRequestBuilder.cs" />
+    <Compile Include="Models\DataAccess\DSX\ChangePinRequest.cs" />
+    <Compile Include="Models\DataAccess\DSX\GrantAccessRequest.cs" />
+    <Compile Include="Models\DataAccess\DSX\RevokeAccessRequest.cs" />
     <Compile Include="Models\Domain\DMLDataFormat.cs" />
     <Compile Include="Models\Domain\DMLRequestSerializer.cs" />
     <Compile Include="Models\Domain\DSXRequest.cs">
