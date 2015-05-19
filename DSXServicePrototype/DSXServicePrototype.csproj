@@ -58,6 +58,7 @@
     <Compile Include="Models\Domain\IDataFormat.cs" />
     <Compile Include="Models\Domain\IRequestSerializer.cs" />
     <Compile Include="Models\Domain\JSONRequestSerializer.cs" />
+    <Compile Include="Models\Domain\TempStudent.cs" />
     <Compile Include="Models\Domain\XMLRequestSerializer.cs" />
     <Compile Include="Models\Service\DSXRequestService.cs" />
     <Compile Include="Program.cs" />

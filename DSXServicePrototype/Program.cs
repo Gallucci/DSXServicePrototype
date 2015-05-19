@@ -1,4 +1,5 @@
-﻿using DSXServicePrototype.Models.Domain;
+﻿using DSXServicePrototype.Models.DataAccess.DSX;
+using DSXServicePrototype.Models.Domain;
 using DSXServicePrototype.Models.Service;
 using System;
 using System.Collections.Generic;
@@ -60,17 +61,38 @@ namespace DSXServicePrototype
             //var xmlSerializer = new XMLRequestSerializer(changePin);
             //Console.Write(xmlSerializer.Serialize());
 
-            var drs = new DSXRequestService();
-            DSXRequest request;
+            //var drs = new DSXRequestService();
+            //DSXRequest request;
             
-            request = drs.GetGrantAccessRequest("gallucci", new List<string> { "COCO Student" }, DateTime.Now, DateTime.Now.AddDays(3), 4543);
-            drs.SendRequest(request);
+            //request = drs.GetGrantAccessRequest("gallucci", new List<string> { "COCO Student" }, DateTime.Now, DateTime.Now.AddDays(3), 4543);
+            //drs.SendRequest(request);
 
-            request = drs.GetRevokeAccessRequest("gallucci", new List<string> { "COCO Student" });
-            drs.SendRequest(request);
+            //request = drs.GetRevokeAccessRequest("gallucci", new List<string> { "COCO Student" });
+            //drs.SendRequest(request);
 
-            request = drs.GetChangePinRequest("gallucci", 1222);
-            drs.SendRequest(request);
+            //request = drs.GetChangePinRequest("gallucci", 1222);
+            //drs.SendRequest(request);                       
+
+            var request = new ChangePinRequest.ChangePinRequestBuilder("Test", "Dummy", "MZMO Student", 90202705124)
+                .SetPin(4545)
+                .Build();
+
+            Console.WriteLine(request.RequestContent);
+
+            request = new GrantAccessRequest.GrantAccessRequestBuilder("Test", "Dummy", "Summer Student", 90202705124)
+                .AccessBeginsOn(DateTime.Now)
+                .AccessStopsOn(DateTime.Now.AddDays(3))
+                .SetPin(4444)
+                .GrantAccessLevel("Summer Student")
+                .Build();
+
+            Console.WriteLine(request.RequestContent);
+
+            request = new RevokeAccessRequest.RevokeAccessRequestBuilder("Test", "Dummy", "COCO Student", 90202705124)
+                .RevokeAccessLevel(new List<string>() {"COCO Student", "COCO RA" })
+                .Build();
+
+            Console.WriteLine(request.RequestContent);
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey(); 

@@ -95,6 +95,15 @@ namespace DSXServicePrototype.Models.Domain
                 return (this);
             }
 
+            public FormatBuilder AddField<T>(IList<Tuple<string, T>> fieldSet, bool allowEmptyValues = false)
+            {
+                foreach (var field in fieldSet)
+                {
+                    AddField(field.Item1, field.Item2, allowEmptyValues);
+                }
+                return (this);
+            }
+
             public FormatBuilder CloseTableWithWrite()
             {
                 Output.AppendLine("W");
