@@ -116,8 +116,8 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
 
                 //RequestContent = dataBuilder.Output.ToString();
 
+                // Serialize the builder and return the request
                 RequestContent = DMLConvert.SerializeObject(this);
-
                 return new RevokeAccessRequest(this);
             }
         }

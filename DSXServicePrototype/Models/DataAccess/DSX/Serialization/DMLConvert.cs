@@ -19,6 +19,12 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
 
         static DMLConvert()
         {
+            // Initialize
+            Initialize();
+        }
+
+        private static void Initialize()
+        {
             Output = new StringBuilder();
             NamesTableEntries = new List<Tuple<string, object>>();
             CardsTableEntries = new List<Tuple<string, object>>();
@@ -27,6 +33,9 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
 
         public static string SerializeObject(object obj)
         {
+            // Re-initialize since the class is static and collections/builders will not be cleared after the first initialization in the constructor
+            Initialize();
+
             var type = obj.GetType();
             var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             

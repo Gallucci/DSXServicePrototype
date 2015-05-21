@@ -76,20 +76,22 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <returns>A Change Pin request for DSX.</returns>
             public override BaseRequest Build()
             {
-                // Do converstion into DML here
-                var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
-                .OpenTable("Names")
-                .AddField("FName", FirstName)
-                .AddField("LName", LastName)
-                .AddField("Company", Company)
-                .CloseTableWithWrite()
-                .OpenTable("Cards")
-                .AddField("Code", Code)
-                .AddField("PIN", Pin)
-                .CloseTableWithWrite();
+                //// Do converstion into DML here
+                //var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
+                //.OpenTable("Names")
+                //.AddField("FName", FirstName)
+                //.AddField("LName", LastName)
+                //.AddField("Company", Company)
+                //.CloseTableWithWrite()
+                //.OpenTable("Cards")
+                //.AddField("Code", Code)
+                //.AddField("PIN", Pin)
+                //.CloseTableWithWrite();
 
-                RequestContent = dataBuilder.Output.ToString();
+                //RequestContent = dataBuilder.Output.ToString();
 
+                // Serialize the builder and return the request
+                RequestContent = DMLConvert.SerializeObject(this);
                 return new ChangePinRequest(this);
             }
         }

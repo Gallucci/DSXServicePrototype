@@ -152,34 +152,36 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <returns>A Grant Access request for DSX.</returns>
             public override BaseRequest Build()
             {
-                var aclLevels = new List<Tuple<string, string>>();
-                foreach (var level in AccessLevels)
-                {
-                    aclLevels.Add(new Tuple<string, string>("AddAcl", level));
-                }
+                //var aclLevels = new List<Tuple<string, string>>();
+                //foreach (var level in AccessLevels)
+                //{
+                //    aclLevels.Add(new Tuple<string, string>("AddAcl", level));
+                //}
 
-                // Do converstion into DML here                
-                var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
-                .OpenTable("Names")
-                .AddField("FName", FirstName)
-                .AddField("LName", LastName)
-                .AddField("Company", Company)
-                .CloseTableWithWrite()
-                .OpenTable("UDF")
-                .AddField("UdfNum", UdfFieldNumber)
-                .AddField("UdfText", UdfFieldData)
-                .CloseTableWithWrite()
-                .OpenTable("Cards")
-                .AddField("Code", Code)
-                .AddField("PIN", Pin)                
-                .AddField("StartDate", StartDate)
-                .AddField("StopDate", StopDate)
-                .AddField("NumUses", NumberOfUses)
-                .AddField(aclLevels)
-                .CloseTableWithWrite();
+                //// Do converstion into DML here                
+                //var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
+                //.OpenTable("Names")
+                //.AddField("FName", FirstName)
+                //.AddField("LName", LastName)
+                //.AddField("Company", Company)
+                //.CloseTableWithWrite()
+                //.OpenTable("UDF")
+                //.AddField("UdfNum", UdfFieldNumber)
+                //.AddField("UdfText", UdfFieldData)
+                //.CloseTableWithWrite()
+                //.OpenTable("Cards")
+                //.AddField("Code", Code)
+                //.AddField("PIN", Pin)                
+                //.AddField("StartDate", StartDate)
+                //.AddField("StopDate", StopDate)
+                //.AddField("NumUses", NumberOfUses)
+                //.AddField(aclLevels)
+                //.CloseTableWithWrite();
 
-                RequestContent = dataBuilder.Output.ToString();
+                //RequestContent = dataBuilder.Output.ToString();
 
+                // Serialize the builder and return the request
+                RequestContent = DMLConvert.SerializeObject(this);
                 return new GrantAccessRequest(this);
             }
         }
