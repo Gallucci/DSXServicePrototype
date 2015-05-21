@@ -52,7 +52,7 @@
     <Compile Include="Models\DataAccess\DSX\RevokeAccessRequest.cs" />
     <Compile Include="Models\DataAccess\DSX\Serialization\DMLConvert.cs" />
     <Compile Include="Models\DataAccess\DSX\Serialization\DMLEntryAttribute.cs" />
-    <Compile Include="Models\DataAccess\DSX\Serialization\DMLIdentifierAttribute.cs" />
+    <Compile Include="Models\DataAccess\DSX\Serialization\DMLIdentifierComponentAttribute.cs" />
     <Compile Include="Models\Domain\DMLDataFormat.cs" />
     <Compile Include="Models\Domain\DMLRequestSerializer.cs" />
     <Compile Include="Models\Domain\DSXRequest.cs">

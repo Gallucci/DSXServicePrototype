@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomAttributes
+namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
 {
     static class DMLConvert
     {
@@ -28,7 +28,7 @@ namespace CustomAttributes
         public static string SerializeObject(object obj)
         {
             var type = obj.GetType();
-            var properties = type.GetProperties();
+            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             
             foreach (var property in properties)
             {                
@@ -87,7 +87,7 @@ namespace CustomAttributes
                                 {
                                     // Get the properties of each object in the list
                                     var childType = item.GetType();
-                                    var childProperties = childType.GetProperties();
+                                    var childProperties = childType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
                                     // Determine of any of properties for each object in the list have DML attrubutes associated with them
                                     foreach (var childProperty in childProperties)
@@ -226,22 +226,22 @@ namespace CustomAttributes
             }
         }
 
-        public static void CloseTableWithWrite()
+        private static void CloseTableWithWrite()
         {
             Output.AppendLine("W");            
         }
 
-        public static void CloseTableWithDelete()
+        private static void CloseTableWithDelete()
         {
             Output.AppendLine("D");            
         }
 
-        public static void CloseTableWithPrint()
+        private static void CloseTableWithPrint()
         {
             Output.AppendLine("P");            
         }
 
-        public static void CloseTableWithUpdate()
+        private static void CloseTableWithUpdate()
         {
             Output.AppendLine("U");            
         }

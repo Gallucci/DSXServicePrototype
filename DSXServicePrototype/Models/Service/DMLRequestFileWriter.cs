@@ -66,7 +66,7 @@ namespace DSXServicePrototype.Models.Service
 
             // Write data
             var data = Request.Content;
-            File.WriteAllText(path, data);
+            //File.WriteAllText(path, data);
         }
     }
 }

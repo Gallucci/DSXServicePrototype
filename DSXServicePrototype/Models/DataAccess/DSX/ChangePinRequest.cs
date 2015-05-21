@@ -1,4 +1,5 @@
-﻿using DSXServicePrototype.Models.Domain;
+﻿using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
+using DSXServicePrototype.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
         internal sealed class ChangePinRequestBuilder : BaseRequestBuilder
         {
             // Implementation-specific properties
+            [DMLEntry(Section.Cards, EntryName = "PIN")]
             private long? Pin { get; set; }
 
             /// <summary>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +9,27 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
 {
     abstract class BaseRequestBuilder
     {
+        [DMLIdentifierComponent(Component.LocationGroupNumber)]
         protected int LocationGroupNumber { get; set; }
+
+        [DMLIdentifierComponent(Component.UdfFieldNumber)]
         protected int UdfFieldNumber { get; set; }
+
+        [DMLIdentifierComponent(Component.UdfFieldData)]
         protected string UdfFieldData { get; set; }
+
+        [DMLEntry(Section.Names, EntryName="FName")]
         protected string FirstName { get; set; }
+
+        [DMLEntry(Section.Names, EntryName = "LName")]
         protected string LastName { get; set; }
+
+        [DMLEntry(Section.Names, EntryName = "Company")]
         protected string Company { get; set; }
+
+        [DMLEntry(Section.Cards, EntryName = "Code")]
         protected long Code { get; set; }
+
         public string RequestContent { get; protected set; }
 
         /// <summary>

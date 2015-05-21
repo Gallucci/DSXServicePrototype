@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomAttributes
+namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
 {
     public enum Section
     {     

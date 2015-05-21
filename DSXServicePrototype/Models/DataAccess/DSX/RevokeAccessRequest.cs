@@ -1,4 +1,5 @@
-﻿using DSXServicePrototype.Models.Domain;
+﻿using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
+using DSXServicePrototype.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
         internal sealed class RevokeAccessRequestBuilder : BaseRequestBuilder
         {
             // Implementation-specific properties
+            [DMLEntry(Section.Cards, EntryName = "DelAcl")]
             private IList<string> AccessLevels { get; set; }
 
             /// <summary>
@@ -90,29 +92,31 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <returns>A Revoke Access request for DSX.</returns>
             public override BaseRequest Build()
             {                
-                var aclLevels = new List<Tuple<string, string>>();
-                foreach (var level in AccessLevels)
-                {
-                    aclLevels.Add(new Tuple<string, string>("DelAcl", level));
-                }
+                //var aclLevels = new List<Tuple<string, string>>();
+                //foreach (var level in AccessLevels)
+                //{
+                //    aclLevels.Add(new Tuple<string, string>("DelAcl", level));
+                //}
                 
-                // Do converstion into DML here
-                var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
-                .OpenTable("Names")
-                .AddField("FName", FirstName)
-                .AddField("LName", LastName)
-                .AddField("Company", Company)
-                .CloseTableWithWrite()
-                .OpenTable("UDF")
-                .AddField("UdfNum", UdfFieldNumber)
-                .AddField("UdfText", UdfFieldData)
-                .CloseTableWithWrite()
-                .OpenTable("Cards")
-                .AddField("Code", Code)
-                .AddField(aclLevels)
-                .CloseTableWithWrite();
+                //// Do converstion into DML here
+                //var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
+                //.OpenTable("Names")
+                //.AddField("FName", FirstName)
+                //.AddField("LName", LastName)
+                //.AddField("Company", Company)
+                //.CloseTableWithWrite()
+                //.OpenTable("UDF")
+                //.AddField("UdfNum", UdfFieldNumber)
+                //.AddField("UdfText", UdfFieldData)
+                //.CloseTableWithWrite()
+                //.OpenTable("Cards")
+                //.AddField("Code", Code)
+                //.AddField(aclLevels)
+                //.CloseTableWithWrite();
 
-                RequestContent = dataBuilder.Output.ToString();
+                //RequestContent = dataBuilder.Output.ToString();
+
+                RequestContent = DMLConvert.SerializeObject(this);
 
                 return new RevokeAccessRequest(this);
             }
