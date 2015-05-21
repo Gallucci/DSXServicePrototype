@@ -29,8 +29,8 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <param name="code">The access card number.</param>
             public ChangePinRequestBuilder(string firstName, string lastName, string company, long code) 
                 : base(firstName, lastName, company, code) 
-            { 
-            
+            {
+                Initialize();
             }
 
             /// <summary>
@@ -45,8 +45,16 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <param name="udfFieldData">The text value of the user-defined field to which the access card is/will be associated.</param>
             public ChangePinRequestBuilder(string firstName, string lastName, string company, long code, int locGroupNumber, int udfFieldNumber, string udfFieldData) 
                 : base(firstName, lastName, company, code, locGroupNumber, udfFieldNumber, udfFieldData) 
-            { 
+            {
+                Initialize();
+            }
 
+            /// <summary>
+            /// Initializes collections and sets default values
+            /// </summary>
+            private void Initialize()
+            {
+                Pin = null;
             }
 
             /// <summary>

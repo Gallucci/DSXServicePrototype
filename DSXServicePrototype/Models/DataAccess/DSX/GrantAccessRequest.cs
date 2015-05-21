@@ -58,9 +58,11 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// </summary>
             private void Initialize()
             {
-                AccessLevels = new List<string>();
+                Pin = null;
                 NumberOfUses = 9999;
                 StartDate = DateTime.Now;
+                StopDate = null;
+                AccessLevels = new List<string>();                
             }
 
             /// <summary>

@@ -50,6 +50,9 @@
     <Compile Include="Models\DataAccess\DSX\ChangePinRequest.cs" />
     <Compile Include="Models\DataAccess\DSX\GrantAccessRequest.cs" />
     <Compile Include="Models\DataAccess\DSX\RevokeAccessRequest.cs" />
+    <Compile Include="Models\DataAccess\DSX\Serialization\DMLConvert.cs" />
+    <Compile Include="Models\DataAccess\DSX\Serialization\DMLEntryAttribute.cs" />
+    <Compile Include="Models\DataAccess\DSX\Serialization\DMLIdentifierAttribute.cs" />
     <Compile Include="Models\Domain\DMLDataFormat.cs" />
     <Compile Include="Models\Domain\DMLRequestSerializer.cs" />
     <Compile Include="Models\Domain\DSXRequest.cs">
@@ -60,6 +63,8 @@
     <Compile Include="Models\Domain\JSONRequestSerializer.cs" />
     <Compile Include="Models\Domain\TempStudent.cs" />
     <Compile Include="Models\Domain\XMLRequestSerializer.cs" />
+    <Compile Include="Models\Service\ApiResponse.cs" />
+    <Compile Include="Models\Service\DMLRequestFileWriter.cs" />
     <Compile Include="Models\Service\DSXRequestService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
