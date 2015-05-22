@@ -9,12 +9,17 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
 {
     public class UdfDataItem
     {
-        [DMLEntry(Section.UDF, EntryName = "UdfNum")]
+        [DMLField(TableName.UDF, FieldName = "UdfNum")]
         public int UdfNumber { get; set; }
 
-        [DMLEntry(Section.UDF, EntryName = "UdfText")]
+        [DMLField(TableName.UDF, FieldName = "UdfText")]
         public string UdfText { get; set; }
 
+        /// <summary>
+        /// A helper class that represents a single user-defined field
+        /// </summary>
+        /// <param name="udfNumber">The field number that identifies which user-defined field to apply the updated value.</param>
+        /// <param name="udfText">The text value with which to update the user-defined field.</param>
         public UdfDataItem(int udfNumber, string udfText)
         {
             UdfNumber = udfNumber;

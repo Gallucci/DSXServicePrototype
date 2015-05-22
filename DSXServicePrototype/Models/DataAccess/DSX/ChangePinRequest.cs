@@ -7,10 +7,17 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.DataAccess.DSX
 {
+    /// <summary>
+    /// Represents a DSX request to change a card's PIN.
+    /// </summary>
     class ChangePinRequest : BaseRequest
     {
         // Implementation-specific properties
-        [DMLEntry(Section.Cards, EntryName = "PIN")]
+
+        /// <summary>
+        /// The PIN for the card.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "PIN")]
         public long? Pin { get; private set; }
 
         /// <summary>
@@ -22,6 +29,9 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             Pin = builder.Pin;
         }
 
+        /// <summary>
+        /// The builder responsible for constructing a DSX Change Pin request.
+        /// </summary>
         internal sealed class ChangePinRequestBuilder : BaseRequestBuilder
         {
             // Implementation-specific properties            

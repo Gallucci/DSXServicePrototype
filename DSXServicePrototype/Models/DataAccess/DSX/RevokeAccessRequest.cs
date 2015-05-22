@@ -7,21 +7,31 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.DataAccess.DSX
 {
+    /// <summary>
+    /// Represents a DSX request to revoke door access from a card holder.
+    /// </summary>
     class RevokeAccessRequest : BaseRequest
     {
         // Implementation-specific properties
-        [DMLEntry(Section.Cards, EntryName = "DelAcl")]
+        
+        /// <summary>
+        /// The access levels to be removed from the card holder's card.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "DelAcl")]
         public IList<string> AccessLevels { get; private set; }
 
+        /// <summary>
+        /// A Revoke Access request whose content can be used to instruct DSX to revoke access from a card holder's card.
+        /// </summary>
+        /// <param name="builder">The builder used to construct the Revoke Access request.</param>
         private RevokeAccessRequest(RevokeAccessRequestBuilder builder) : base(builder) 
         {
             AccessLevels = builder.AccessLevels;
         }
 
         /// <summary>
-        /// A Revoke Accesss request whose content can be used to instruct to DSX to revoke access levels from a card holder's access card
-        /// </summary>
-        /// <param name="builder">The builder used to construct the Revoke Access request.</param>
+        /// The builder responsible for constructing a DSX Revoke Access request.
+        /// </summary>        
         internal sealed class RevokeAccessRequestBuilder : BaseRequestBuilder
         {
             // Implementation-specific properties            

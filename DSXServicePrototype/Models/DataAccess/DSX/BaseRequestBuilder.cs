@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.DataAccess.DSX
 {
+    /// <summary>
+    /// The base request builder for building requests meant for DSX consumption.  Every request should contain a builder to build it.
+    /// </summary>
     abstract class BaseRequestBuilder
     {        
         public int LocationGroupNumber { get; private set; }

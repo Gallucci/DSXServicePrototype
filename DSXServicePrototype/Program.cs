@@ -57,16 +57,16 @@ namespace DSXServicePrototype
             foreach (var property in properties)
             {
                 var attributes = property.GetCustomAttributes(false);
-                var dmlEntry = attributes.FirstOrDefault(a => a.GetType() == typeof(DMLEntryAttribute));
+                var dmlEntry = attributes.FirstOrDefault(a => a.GetType() == typeof(DMLFieldAttribute));
 
                 if (dmlEntry != null)
                 {
-                    var toDml = dmlEntry as DMLEntryAttribute;
-                    var sectionName = toDml.SectionName;
-                    var entryName = toDml.EntryName;
+                    var toDml = dmlEntry as DMLFieldAttribute;
+                    var tableName = toDml.TableName;
+                    var fieldName = toDml.FieldName;
                     var entryValue = property.GetValue(request, null);
 
-                    Console.WriteLine(string.Format("The [{0}] class has a DMLEntryAttribute: TableName [{1}], EntryName [{2}], Value [{3}]", type.Name, sectionName, entryName, entryValue));
+                    Console.WriteLine(string.Format("The [{0}] class has a DMLEntryAttribute: TableName [{1}], FieldName [{2}], Value [{3}]", type.Name, tableName, fieldName, entryValue));
                 }
             }
         }

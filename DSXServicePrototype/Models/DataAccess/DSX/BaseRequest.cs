@@ -7,34 +7,61 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.DataAccess.DSX
 {
+    /// <summary>
+    /// The base representation of all requests made for DSX consumption.
+    /// </summary>
     abstract class BaseRequest
     {
-        [DMLIdentifierComponent(Component.LocationGroupNumber)]
+        /// <summary>
+        /// The location group number used to identify a card holder in DSX.
+        /// </summary>
+        [DMLIdentifier(Component.LocationGroupNumber)]
         public int LocationGroupNumber { get; private set; }
 
-        [DMLIdentifierComponent(Component.UdfFieldNumber)]
+        /// <summary>
+        /// The number of the user-defined field used to identify a card holder in DSX.
+        /// </summary>
+        [DMLIdentifier(Component.UdfFieldNumber)]
         public int UdfFieldNumber { get; private set; }
 
-        [DMLIdentifierComponent(Component.UdfFieldData)]
+        /// <summary>
+        /// The data contained within the user-defined field used to identify a card holder in DSX.
+        /// </summary>
+        [DMLIdentifier(Component.UdfFieldData)]
         public string UdfFieldData { get; private set; }
 
-        [DMLEntry(Section.Names, EntryName = "FName")]
+        /// <summary>
+        /// The first name of the card holder.
+        /// </summary>
+        [DMLField(TableName.Names, FieldName = "FName")]
         public string FirstName { get; private set; }
 
-        [DMLEntry(Section.Names, EntryName = "LName")]
+        /// <summary>
+        /// The last name of the card holder.
+        /// </summary>
+        [DMLField(TableName.Names, FieldName = "LName")]
         public string LastName { get; private set; }
 
-        [DMLEntry(Section.Names, EntryName = "Company")]
+        /// <summary>
+        /// The company name of the card holder.
+        /// </summary>
+        [DMLField(TableName.Names, FieldName = "Company")]
         public string Company { get; private set; }
 
-        [DMLEntry(Section.Cards, EntryName = "Code")]
+        /// <summary>
+        /// The code printed on the front of the card.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "Code")]
         public long Code { get; private set; }
 
-        [DMLEntry(Section.UDF)]
+        /// <summary>
+        /// User-defined data to be included with the request
+        /// </summary>
+        [DMLField]
         public List<UdfDataItem> UdfData { get; private set; }
 
         /// <summary>
-        /// A request whose content can be used to instruct to DSX to perform a particular set of actions on a card holder's access card
+        /// Constructs a request whose content can be used to instruct to DSX to perform a particular set of actions on a card holder's access card
         /// </summary>
         /// <param name="builder">The builder used to construct the request.</param>
         protected BaseRequest(BaseRequestBuilder builder)

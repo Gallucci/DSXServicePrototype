@@ -7,26 +7,46 @@ using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.DataAccess.DSX
 {
+    /// <summary>
+    /// Represents a DSX request to grant door access to a card holder's card.
+    /// </summary>
     class GrantAccessRequest : BaseRequest
     {
         // Implementation-specific properties
-        [DMLEntry(Section.Cards, EntryName = "PIN")]
+
+        /// <summary>
+        /// The PIN for the card.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "PIN")]
         public long? Pin { get; private set; }
 
-        [DMLEntry(Section.Cards, EntryName = "NumUses")]
+        /// <summary>
+        /// The maximum number of times the card can be used.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "NumUses")]
         public long? NumberOfUses { get; private set; }
 
-        [DMLEntry(Section.Cards, EntryName = "StartDate")]
+        /// <summary>
+        /// The starting date when a card's access levels will be active.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "StartDate")]
         public DateTime? StartDate { get; private set; }
 
-        [DMLEntry(Section.Cards, EntryName = "StopDate")]
+
+        /// <summary>
+        /// The ending date when a card's access levels will be inactive.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "StopDate")]
         public DateTime? StopDate { get; private set; }
 
-        [DMLEntry(Section.Cards, EntryName = "AddAcl")]
+        /// <summary>
+        /// The access levels to grant to a card.
+        /// </summary>
+        [DMLField(TableName.Cards, FieldName = "AddAcl")]
         public IList<string> AccessLevels { get; private set; }
 
         /// <summary>
-        /// A Grant Accesss request whose content can be used to instruct to DSX to grant access levels to a card holder's access card
+        /// A Grant Accesss request whose content can be used to instruct to DSX to grant access levels to a card holder's card.
         /// </summary>
         /// <param name="builder">The builder used to construct the Grant Access request.</param>
         private GrantAccessRequest(GrantAccessRequestBuilder builder) : base(builder) 
@@ -38,6 +58,9 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             AccessLevels = builder.AccessLevels;
         }
 
+        /// <summary>
+        /// The builder responsible for setting up a Grant Access request.
+        /// </summary>
         internal sealed class GrantAccessRequestBuilder : BaseRequestBuilder
         {
             // Implementation-specific properties            

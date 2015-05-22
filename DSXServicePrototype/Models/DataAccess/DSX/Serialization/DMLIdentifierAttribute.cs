@@ -14,13 +14,13 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    class DMLIdentifierComponentAttribute : Attribute
+    class DMLIdentifierAttribute : Attribute
     {
-        public Component Name { get; set; }
+        public Component ComponentName { get; set; }
 
-        public DMLIdentifierComponentAttribute(Component name)
+        public DMLIdentifierAttribute(Component name)
         {
-            Name = name;
+            ComponentName = name;
         }
     }
 }
