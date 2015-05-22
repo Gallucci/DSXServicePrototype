@@ -5,19 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
-{
-    public enum TableName
-    {     
-        Names,        
-        UDF,
-        Images,
-        Cards,
-    }
-
+{    
+    /// <summary>
+    /// Attribute that tags a property as a DML field.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     class DMLFieldAttribute : Attribute
     {
+        /// <summary>
+        /// The table under which the property value should be written.
+        /// </summary>
         public TableName TableName { get; set; }
+
+        /// <summary>
+        /// The field name for the property value as written in the DML.
+        /// </summary>
         public string FieldName { get; set; }
 
         /// <summary>
@@ -33,5 +35,16 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         {
             TableName = name;
         }
+    }
+
+    /// <summary>
+    /// Possible table name values.
+    /// </summary>
+    public enum TableName
+    {
+        Names,
+        UDF,
+        Images,
+        Cards,
     }
 }

@@ -76,4 +76,33 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             UdfData = builder.UdfData;
         }
     }
+
+    /// <summary>
+    /// A helper class to encapsulate user-defined data
+    /// </summary>
+    public class UdfDataItem
+    {
+        /// <summary>
+        /// The number associated with the user-defined field
+        /// </summary>
+        [DMLField(TableName.UDF, FieldName = "UdfNum")]
+        public int UdfNumber { get; set; }
+
+        /// <summary>
+        /// The data value associated with the user-defined field
+        /// </summary>
+        [DMLField(TableName.UDF, FieldName = "UdfText")]
+        public string UdfText { get; set; }
+
+        /// <summary>
+        /// A helper class that represents a single user-defined field
+        /// </summary>
+        /// <param name="udfNumber">The field number that identifies which user-defined field to apply the updated value.</param>
+        /// <param name="udfText">The text value with which to update the user-defined field.</param>
+        public UdfDataItem(int udfNumber, string udfText)
+        {
+            UdfNumber = udfNumber;
+            UdfText = udfText;
+        }
+    }
 }

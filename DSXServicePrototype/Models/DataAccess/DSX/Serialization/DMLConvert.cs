@@ -9,179 +9,6 @@ using System.Threading.Tasks;
 namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
 {
     /// <summary>
-    /// Helper class that represents the Identifier portion at the top of every DSX request.
-    /// </summary>
-    class DSXIdentifier
-    {
-        public int LocationGroupNumber { get; set;}
-        public int UdfFieldNumber {get; set;}
-        public string UdfFieldData {get; set;}
-
-        public DSXIdentifier() {}
-    
-        /// <summary>
-        /// Constructs a representation of a DSX Identifier for DML export.
-        /// </summary>
-        /// <param name="locationGroupNumber">The group location number used to identify a card holder in DSX.</param>
-        /// <param name="udfFieldNumber">The number of the user-defined field used to identify a card holder in DSX.</param>
-        /// <param name="udfFieldData">The data contained within the user-defined field used to identify a card holder in DSX.</param>
-        public DSXIdentifier(int locationGroupNumber, int udfFieldNumber, string udfFieldData)
-        {
-            LocationGroupNumber = locationGroupNumber;
-            UdfFieldNumber = udfFieldNumber;
-            UdfFieldData = udfFieldData;
-        }
-
-        /// <summary>
-        /// Gets the DML output of the DSX Identifier.
-        /// </summary>
-        /// <returns>The string output of the DSX Identifier in DML format.</returns>
-        public override string ToString()
-        {
-            return string.Format("I L{0} U{1} ^{2}^^^{3}", LocationGroupNumber, UdfFieldNumber, UdfFieldData, Environment.NewLine);
-        }
-    }
-
-    /// <summary>
-    /// Helper class that represents a table in a DSX request.
-    /// </summary>
-    class DSXTable
-    {
-        public string Name { get; private set; }
-        public IList<Tuple<string, object>> Entries {get; private set;}
-        private StringBuilder Output { get; set; }
-
-        /// <summary>
-        /// Constructs a representation of a DSX Table for DML export.
-        /// </summary>
-        /// <param name="name"></param>
-        public DSXTable(string name)
-        {
-            Name = name;
-            Entries = new List<Tuple<string, object>>();
-            Output = new StringBuilder();
-        }
-
-        /// <summary>
-        /// Gets the DML output of the DSX Table.
-        /// </summary>
-        /// <returns>The string output of the DSX Table in DML format.</returns>
-        public override string ToString()
-        { 	 
-            if(Entries.Any())
-            {
-                OpenTable(Name);
-                foreach (var entry in Entries)
-                {
-                    AddField(entry.Item1, entry.Item2);
-                }
-                CloseTableWithWrite();
-            }
-
-            return Output.ToString();
-        }
-      
-        /// <summary>
-        /// Formats a DateTime into a value acceptable by DSX
-        /// </summary>
-        /// <param name="value">The date/time to be formatted.</param>
-        /// <returns>The string output of the date/time in DML format.</returns>
-        private static string FormatDSXDate(DateTime value)
-        {
-            var pattern = "M/d/yyyy HH:mm";
-            return value.ToString(pattern);
-        }
-
-        /// <summary>
-        /// Formats a boolean into a value acceptable by DSX
-        /// </summary>
-        /// <param name="value">The boolean to be formatted.</param>
-        /// <returns>The string output of the boolean in DML format.</returns>
-        private static string FormatDSXBoolean(bool value)
-        {
-            if (value)
-                return "1";
-            else
-                return "0";
-        }
-
-        /// <summary>
-        /// Adds a DSX field entry in DML format to the output.
-        /// </summary>
-        /// <param name="name">The field name of the entry.</param>
-        /// <param name="value">The field value of the entry.</param>
-        private void WriteEntryLine(string name, string value) { Output.AppendLine(string.Format("F {0} ^{1}^^^", name, value)); }
-
-        /// <summary>
-        /// Adds a DSX open table entry in DML format to the format.
-        /// </summary>
-        /// <param name="tableName">The name of the table to open.</param>
-        private void OpenTable(string tableName) { Output.AppendLine(string.Format("T {0}", tableName)); }
-
-        /// <summary>
-        /// Handles the field entry values so they are properly added to the DML output.
-        /// </summary>
-        /// <typeparam name="T">The type of the value to be added to the DML output.</typeparam>
-        /// <param name="name">The name of the field to be added to the DML output.</param>
-        /// <param name="value">The value of the field to be added to the DML output.</param>
-        /// <param name="isAllowedToNoValue">If true, the field will still be added to the DML output even if the value is null.</param>
-        private void AddField<T>(string name, T value, bool isAllowedToNoValue = false)
-        {
-            if (value is DateTime)
-            {
-                WriteEntryLine(name, FormatDSXDate((DateTime)(object)value));
-            }
-            else if (value is DateTime?)
-            {
-                if ((value as DateTime?).HasValue)
-                    WriteEntryLine(name, FormatDSXDate((DateTime)(object)value));
-            }
-            else if (value is bool)
-            {
-                WriteEntryLine(name, FormatDSXBoolean((bool)(object)value));
-            }
-            else if (value is bool?)
-            {
-                if ((value as bool?).HasValue)
-                    WriteEntryLine(name, FormatDSXBoolean((bool)(object)value));
-            }
-            else if (value is ICollection)
-            {
-                var list = value as ICollection;
-                foreach (var item in list)
-                {
-                    WriteEntryLine(name, item.ToString().Trim());
-                }
-            }
-            else
-            {
-                if (value != null)
-                    WriteEntryLine(name, value.ToString().Trim());
-            }
-        }
-
-        /// <summary>
-        /// Adds a DSX Close Table and Write Data to DSX entry in DML format to the format.
-        /// </summary>
-        private void CloseTableWithWrite() { Output.AppendLine("W"); }
-
-        /// <summary>
-        /// Adds a DSX Close Table and Delete Data from DSX entry in DML format to the format.
-        /// </summary>
-        private void CloseTableWithDelete() { Output.AppendLine("D"); }
-
-        /// <summary>
-        /// Adds a DSX Close Table and Print Data in DSX entry in DML format to the format.
-        /// </summary>
-        private void CloseTableWithPrint() { Output.AppendLine("P"); }
-
-        /// <summary>
-        /// Adds a DSX Close Table and Update Data in DSX entry in DML format to the format.
-        /// </summary>
-        private void CloseTableWithUpdate() { Output.AppendLine("U"); }
-    }
-
-    /// <summary>
     /// Static class that attempts to serialize an object into the DSX Markup Language (DML) using DML decorator attributes
     /// </summary>
     static class DMLConvert
@@ -193,12 +20,18 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         private static DSXTable images;
         private static DSXTable cards;
 
+        /// <summary>
+        /// Static class constructor.
+        /// </summary>
         static DMLConvert()
         {
             // Initialize
             Initialize();
         }
 
+        /// <summary>
+        /// Initializes the identifier, tables, and output
+        /// </summary>
         private static void Initialize()
         {
             output = new StringBuilder();
@@ -341,5 +174,178 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
                 }
             }
         }                
+    }
+
+    /// <summary>
+    /// Helper class that represents the Identifier portion at the top of every DSX request.
+    /// </summary>
+    class DSXIdentifier
+    {
+        public int LocationGroupNumber { get; set; }
+        public int UdfFieldNumber { get; set; }
+        public string UdfFieldData { get; set; }
+
+        public DSXIdentifier() { }
+
+        /// <summary>
+        /// Constructs a representation of a DSX Identifier for DML export.
+        /// </summary>
+        /// <param name="locationGroupNumber">The group location number used to identify a card holder in DSX.</param>
+        /// <param name="udfFieldNumber">The number of the user-defined field used to identify a card holder in DSX.</param>
+        /// <param name="udfFieldData">The data contained within the user-defined field used to identify a card holder in DSX.</param>
+        public DSXIdentifier(int locationGroupNumber, int udfFieldNumber, string udfFieldData)
+        {
+            LocationGroupNumber = locationGroupNumber;
+            UdfFieldNumber = udfFieldNumber;
+            UdfFieldData = udfFieldData;
+        }
+
+        /// <summary>
+        /// Gets the DML output of the DSX Identifier.
+        /// </summary>
+        /// <returns>The string output of the DSX Identifier in DML format.</returns>
+        public override string ToString()
+        {
+            return string.Format("I L{0} U{1} ^{2}^^^{3}", LocationGroupNumber, UdfFieldNumber, UdfFieldData, Environment.NewLine);
+        }
+    }
+
+    /// <summary>
+    /// Helper class that represents a table in a DSX request.
+    /// </summary>
+    class DSXTable
+    {
+        public string Name { get; private set; }
+        public IList<Tuple<string, object>> Entries { get; private set; }
+        private StringBuilder Output { get; set; }
+
+        /// <summary>
+        /// Constructs a representation of a DSX Table for DML export.
+        /// </summary>
+        /// <param name="name"></param>
+        public DSXTable(string name)
+        {
+            Name = name;
+            Entries = new List<Tuple<string, object>>();
+            Output = new StringBuilder();
+        }
+
+        /// <summary>
+        /// Gets the DML output of the DSX Table.
+        /// </summary>
+        /// <returns>The string output of the DSX Table in DML format.</returns>
+        public override string ToString()
+        {
+            if (Entries.Any())
+            {
+                OpenTable(Name);
+                foreach (var entry in Entries)
+                {
+                    AddField(entry.Item1, entry.Item2);
+                }
+                CloseTableWithWrite();
+            }
+
+            return Output.ToString();
+        }
+
+        /// <summary>
+        /// Formats a DateTime into a value acceptable by DSX
+        /// </summary>
+        /// <param name="value">The date/time to be formatted.</param>
+        /// <returns>The string output of the date/time in DML format.</returns>
+        private static string FormatDSXDate(DateTime value)
+        {
+            var pattern = "M/d/yyyy HH:mm";
+            return value.ToString(pattern);
+        }
+
+        /// <summary>
+        /// Formats a boolean into a value acceptable by DSX
+        /// </summary>
+        /// <param name="value">The boolean to be formatted.</param>
+        /// <returns>The string output of the boolean in DML format.</returns>
+        private static string FormatDSXBoolean(bool value)
+        {
+            if (value)
+                return "1";
+            else
+                return "0";
+        }
+
+        /// <summary>
+        /// Adds a DSX field entry in DML format to the output.
+        /// </summary>
+        /// <param name="name">The field name of the entry.</param>
+        /// <param name="value">The field value of the entry.</param>
+        private void WriteEntryLine(string name, string value) { Output.AppendLine(string.Format("F {0} ^{1}^^^", name, value)); }
+
+        /// <summary>
+        /// Adds a DSX open table entry in DML format to the format.
+        /// </summary>
+        /// <param name="tableName">The name of the table to open.</param>
+        private void OpenTable(string tableName) { Output.AppendLine(string.Format("T {0}", tableName)); }
+
+        /// <summary>
+        /// Handles the field entry values so they are properly added to the DML output.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to be added to the DML output.</typeparam>
+        /// <param name="name">The name of the field to be added to the DML output.</param>
+        /// <param name="value">The value of the field to be added to the DML output.</param>
+        /// <param name="isAllowedToNoValue">If true, the field will still be added to the DML output even if the value is null.</param>
+        private void AddField<T>(string name, T value, bool isAllowedToNoValue = false)
+        {
+            if (value is DateTime)
+            {
+                WriteEntryLine(name, FormatDSXDate((DateTime)(object)value));
+            }
+            else if (value is DateTime?)
+            {
+                if ((value as DateTime?).HasValue)
+                    WriteEntryLine(name, FormatDSXDate((DateTime)(object)value));
+            }
+            else if (value is bool)
+            {
+                WriteEntryLine(name, FormatDSXBoolean((bool)(object)value));
+            }
+            else if (value is bool?)
+            {
+                if ((value as bool?).HasValue)
+                    WriteEntryLine(name, FormatDSXBoolean((bool)(object)value));
+            }
+            else if (value is ICollection)
+            {
+                var list = value as ICollection;
+                foreach (var item in list)
+                {
+                    WriteEntryLine(name, item.ToString().Trim());
+                }
+            }
+            else
+            {
+                if (value != null)
+                    WriteEntryLine(name, value.ToString().Trim());
+            }
+        }
+
+        /// <summary>
+        /// Adds a DSX Close Table and Write Data to DSX entry in DML format to the format.
+        /// </summary>
+        private void CloseTableWithWrite() { Output.AppendLine("W"); }
+
+        /// <summary>
+        /// Adds a DSX Close Table and Delete Data from DSX entry in DML format to the format.
+        /// </summary>
+        private void CloseTableWithDelete() { Output.AppendLine("D"); }
+
+        /// <summary>
+        /// Adds a DSX Close Table and Print Data in DSX entry in DML format to the format.
+        /// </summary>
+        private void CloseTableWithPrint() { Output.AppendLine("P"); }
+
+        /// <summary>
+        /// Adds a DSX Close Table and Update Data in DSX entry in DML format to the format.
+        /// </summary>
+        private void CloseTableWithUpdate() { Output.AppendLine("U"); }
     }
 }
