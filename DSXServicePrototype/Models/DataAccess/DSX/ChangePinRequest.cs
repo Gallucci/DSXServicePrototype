@@ -1,5 +1,4 @@
 ﻿using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
-using DSXServicePrototype.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,17 +9,23 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
 {
     class ChangePinRequest : BaseRequest
     {
+        // Implementation-specific properties
+        [DMLEntry(Section.Cards, EntryName = "PIN")]
+        public long? Pin { get; private set; }
+
         /// <summary>
         /// A Change PIN request whose content can be used to instruct to DSX to change the PIN of a card holder's access card
         /// </summary>
         /// <param name="builder">The builder used to construct the Change PIN request.</param>
-        private ChangePinRequest(ChangePinRequestBuilder builder) : base(builder) { }
+        private ChangePinRequest(ChangePinRequestBuilder builder) : base(builder) 
+        {
+            Pin = builder.Pin;
+        }
 
         internal sealed class ChangePinRequestBuilder : BaseRequestBuilder
         {
-            // Implementation-specific properties
-            [DMLEntry(Section.Cards, EntryName = "PIN")]
-            private long? Pin { get; set; }
+            // Implementation-specific properties            
+            public long? Pin { get; private set; }
 
             /// <summary>
             /// Initializes a builder that helps construct a Change PIN request for DSX.
@@ -76,22 +81,6 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <returns>A Change Pin request for DSX.</returns>
             public override BaseRequest Build()
             {
-                //// Do converstion into DML here
-                //var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
-                //.OpenTable("Names")
-                //.AddField("FName", FirstName)
-                //.AddField("LName", LastName)
-                //.AddField("Company", Company)
-                //.CloseTableWithWrite()
-                //.OpenTable("Cards")
-                //.AddField("Code", Code)
-                //.AddField("PIN", Pin)
-                //.CloseTableWithWrite();
-
-                //RequestContent = dataBuilder.Output.ToString();
-
-                // Serialize the builder and return the request
-                RequestContent = DMLConvert.SerializeObject(this);
                 return new ChangePinRequest(this);
             }
         }

@@ -8,9 +8,10 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
 {
     public enum Section
     {     
-        Names,
+        Names,        
+        UDF,
+        Images,
         Cards,
-        UDF
     }
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple=false)]

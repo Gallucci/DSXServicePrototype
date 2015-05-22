@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,8 +15,9 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         private static string udfFieldNumber;
         private static string udfFieldData;
         private static IList<Tuple<string, object>> NamesTableEntries;
-        private static IList<Tuple<string, object>> CardsTableEntries;
         private static IList<Tuple<string, object>> UdfTableEntries;
+        private static IList<Tuple<string, object>> ImagesTableEntries;
+        private static IList<Tuple<string, object>> CardsTableEntries;        
 
         static DMLConvert()
         {
@@ -26,112 +28,22 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         private static void Initialize()
         {
             Output = new StringBuilder();
-            NamesTableEntries = new List<Tuple<string, object>>();
-            CardsTableEntries = new List<Tuple<string, object>>();
+            NamesTableEntries = new List<Tuple<string, object>>();            
             UdfTableEntries = new List<Tuple<string, object>>();
+            ImagesTableEntries = new List<Tuple<string, object>>();
+            CardsTableEntries = new List<Tuple<string, object>>();
         }
 
         public static string SerializeObject(object obj)
         {
             // Re-initialize since the class is static and collections/builders will not be cleared after the first initialization in the constructor
             Initialize();
-
-            var type = obj.GetType();
-            var properties = type.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             
-            foreach (var property in properties)
-            {                
-                var attributes = property.GetCustomAttributes(false);
-                var dmlIdentifier = attributes.FirstOrDefault(a => a.GetType() == typeof(DMLIdentifierComponentAttribute));                                                
-                var dmlEntry = attributes.FirstOrDefault(a => a.GetType() == typeof(DMLEntryAttribute));
+            // Parse the object for properties with DML Identifier decorators
+            GetDMLIdentifiersFromObject(obj);
 
-                // Check if the property attribute is a DML identifier component
-                if (dmlIdentifier != null)
-                {
-                    var toDml = dmlIdentifier as DMLIdentifierComponentAttribute;
-                    var componentName = toDml.Name;
-                    var componentValue = property.GetValue(obj, null);
-
-                    switch(componentName)
-                    {
-                        case Component.LocationGroupNumber:
-                            locationGroupNumber = componentValue.ToString();
-                            break;
-                        case Component.UdfFieldNumber:
-                            udfFieldNumber = componentValue.ToString();
-                            break;
-                        case Component.UdfFieldData:
-                            udfFieldData = componentValue.ToString();
-                            break;
-                    }
-                }
-
-                // Check if the property attribute is a DML entry
-                if (dmlEntry != null)
-                {
-                    var toDml = dmlEntry as DMLEntryAttribute;
-                    var sectionName = toDml.SectionName;
-                    var entryName = toDml.EntryName;
-                    var entryValue = property.GetValue(obj, null);
-
-                    switch(sectionName)
-                    {
-                        case Section.Names:
-                            NamesTableEntries.Add(new Tuple<string,object>(toDml.EntryName, entryValue));
-                            break;
-                        case Section.Cards:
-                            CardsTableEntries.Add(new Tuple<string, object>(toDml.EntryName, entryValue));
-                            break;
-                        case Section.UDF:
-
-                            // If the property is a type that implements a list we might have to map the properties of the objects contained in the list
-                            if (entryValue is IList)
-                            {
-                                // Treat the property as a list and assume no DML attributes
-                                var valueList = entryValue as IList;
-                                var hasDMLAttributes = false;
-
-                                // Cycle through the items in the property's list
-                                foreach (var item in valueList)
-                                {
-                                    // Get the properties of each object in the list
-                                    var childType = item.GetType();
-                                    var childProperties = childType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-                                    // Determine of any of properties for each object in the list have DML attrubutes associated with them
-                                    foreach (var childProperty in childProperties)
-                                    {
-                                        var childAttributes = childProperty.GetCustomAttributes(false);
-                                        var childDmlEntry = childAttributes.FirstOrDefault(a => a.GetType() == typeof(DMLEntryAttribute));
-                                        
-                                        // If there are DML attributes on the properties of the list object they must be mapped
-                                        if (childDmlEntry != null)
-                                        {
-                                            hasDMLAttributes = true;
-                                            var childToDml = childDmlEntry as DMLEntryAttribute;
-                                            var childSectionName = childToDml.SectionName;
-                                            var childEntryName = childToDml.EntryName;
-                                            var childEntryValue = childProperty.GetValue(item, null);
-
-                                            if (childSectionName == Section.UDF)
-                                                UdfTableEntries.Add(new Tuple<string, object>(childToDml.EntryName, childEntryValue));
-                                        }
-                                    }
-
-                                    // If the property was a list type, but its objects had no DML attributes then map the property in the standard way
-                                    if(!hasDMLAttributes)
-                                        UdfTableEntries.Add(new Tuple<string, object>(toDml.EntryName, entryValue));
-                                }
-                            }
-                            else
-                            {
-                                // The property has DML attributes, but isn't a list so just map it in the standard way
-                                UdfTableEntries.Add(new Tuple<string, object>(toDml.EntryName, entryValue));
-                            }
-                            break;
-                    }
-                }
-            }
+            // Parse the object for properties with DML Entry decorators
+            GetDMLEntriesFromObject(obj);
 
             // Begin serialization
             AddIdentifier();
@@ -158,6 +70,17 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
                 CloseTableWithWrite();
             }
 
+            // Check for Images table entries
+            if (ImagesTableEntries.Any())
+            {
+                OpenTable("Images");
+                foreach (var entry in ImagesTableEntries)
+                {
+                    AddField(entry.Item1, entry.Item2);
+                }
+                CloseTableWithWrite();
+            }
+
             // Check for Cards table entries
             if (CardsTableEntries.Any())
             {
@@ -169,7 +92,105 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
                 CloseTableWithWrite();
             }
 
+            // Return the serialized object
             return Output.ToString();
+        }
+
+        private static void GetDMLIdentifiersFromObject(object obj)
+        {
+            var type = obj.GetType();
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                var attributes = property.GetCustomAttributes(false);
+                var dmlIdentifier = attributes.FirstOrDefault(a => a.GetType() == typeof(DMLIdentifierComponentAttribute));
+
+                if (dmlIdentifier != null)
+                {
+                    var toDml = dmlIdentifier as DMLIdentifierComponentAttribute;
+                    var componentName = toDml.Name;
+                    var componentValue = property.GetValue(obj, null);
+
+                    switch (componentName)
+                    {
+                        case Component.LocationGroupNumber:
+                            locationGroupNumber = componentValue.ToString();
+                            break;
+                        case Component.UdfFieldNumber:
+                            udfFieldNumber = componentValue.ToString();
+                            break;
+                        case Component.UdfFieldData:
+                            udfFieldData = componentValue.ToString();
+                            break;
+                    }
+                }
+            }
+        }
+
+        private static void GetDMLEntriesFromObject(object obj)
+        {
+            // If the object for serialization is enumerable we need to continue traversing and calling the routine until we get a non-enumerable object
+            if (obj is IEnumerable)
+            {
+                var list = obj as IEnumerable;
+                foreach (var item in list)
+                {
+                    GetDMLEntriesFromObject(item);
+                }
+            }
+
+            // Onve we get through traversing we need to get the object's properties
+            var type = obj.GetType();
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Iterate through the object's properties
+            foreach (var property in properties)
+            {
+                // Get only the DML Entry attributes from the property in question
+                var attributes = property.GetCustomAttributes(false);
+                var dmlEntry = attributes.FirstOrDefault(a => a.GetType() == typeof(DMLEntryAttribute));
+                
+                // If we actually have a property with a DML Entry attribute we need to examine that property
+                if (dmlEntry != null)
+                {
+                    // Get information from the property and attribute
+                    var value = property.GetValue(obj, null);
+                    var attribute = dmlEntry as DMLEntryAttribute;
+                    var sectionName = attribute.SectionName;
+                    var entryName = attribute.EntryName;
+
+                    // If the value of the property is an enumerable object we need to continue travering and calling the routine until get get a non-enumerable object
+                    if (value is IEnumerable)
+                    {
+                        var valueList = value as IEnumerable;
+                        foreach (var itemValue in valueList)
+                        {
+                            GetDMLEntriesFromObject(itemValue);
+                        }
+                    }
+
+                    // Once we have a property value that isn't an enumerable object and it has a DML Entry attribute we need to store its information in the right list
+                    if (entryName != null)
+                    {
+                        switch (sectionName)
+                        {
+                            case Section.Names:
+                                NamesTableEntries.Add(new Tuple<string, object>(entryName, value));
+                                break;
+                            case Section.UDF:
+                                UdfTableEntries.Add(new Tuple<string, object>(entryName, value));
+                                break;
+                            case Section.Images:
+                                ImagesTableEntries.Add(new Tuple<string, object>(entryName, value));
+                                break;
+                            case Section.Cards:
+                                CardsTableEntries.Add(new Tuple<string, object>(entryName, value));
+                                break;
+                        }
+                    }
+                }
+            }
         }
         
         private static string FormatDSXDate(DateTime value)
@@ -177,6 +198,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
             var pattern = "M/d/yyyy HH:mm";
             return value.ToString(pattern);
         }
+
         private static string FormatDSXBoolean(bool value)
         {
             if (value)

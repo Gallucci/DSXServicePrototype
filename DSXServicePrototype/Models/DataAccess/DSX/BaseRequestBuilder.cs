@@ -1,5 +1,4 @@
-﻿using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,30 +7,16 @@ using System.Threading.Tasks;
 namespace DSXServicePrototype.Models.DataAccess.DSX
 {
     abstract class BaseRequestBuilder
-    {
-        [DMLIdentifierComponent(Component.LocationGroupNumber)]
-        protected int LocationGroupNumber { get; set; }
-
-        [DMLIdentifierComponent(Component.UdfFieldNumber)]
-        protected int UdfFieldNumber { get; set; }
-
-        [DMLIdentifierComponent(Component.UdfFieldData)]
-        protected string UdfFieldData { get; set; }
-
-        [DMLEntry(Section.Names, EntryName="FName")]
-        protected string FirstName { get; set; }
-
-        [DMLEntry(Section.Names, EntryName = "LName")]
-        protected string LastName { get; set; }
-
-        [DMLEntry(Section.Names, EntryName = "Company")]
-        protected string Company { get; set; }
-
-        [DMLEntry(Section.Cards, EntryName = "Code")]
-        protected long Code { get; set; }
-
-        public string RequestContent { get; protected set; }
-
+    {        
+        public int LocationGroupNumber { get; private set; }
+        public int UdfFieldNumber { get; private set; }
+        public string UdfFieldData { get; private set; }
+        public string FirstName { get; private set; }
+        public string LastName { get; private set; }
+        public string Company { get; private set; }
+        public long Code { get; private set; }
+        public List<UdfDataItem> UdfData {get; private set;}
+        
         /// <summary>
         /// Initializes a builder that helps construct a request for DSX.
         /// </summary>
@@ -48,6 +33,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             LastName = lastName;
             Company = company;
             Code = code;
+            UdfData = new List<UdfDataItem>() { new UdfDataItem(UdfFieldNumber, UdfFieldData) };
         }
 
         /// <summary>
@@ -69,6 +55,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             LastName = lastName;
             Company = company;
             Code = code;
+            UdfData = new List<UdfDataItem>() { new UdfDataItem(UdfFieldNumber, UdfFieldData) };
         }
 
         /// <summary>

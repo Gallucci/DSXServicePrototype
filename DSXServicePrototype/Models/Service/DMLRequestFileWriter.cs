@@ -1,4 +1,5 @@
 ﻿using DSXServicePrototype.Models.DataAccess.DSX;
+using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,7 +66,8 @@ namespace DSXServicePrototype.Models.Service
             }
 
             // Write data
-            var data = Request.Content;
+            //var data = Request.Content;
+            var data = DMLConvert.SerializeObject(Request);
             //File.WriteAllText(path, data);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
-using DSXServicePrototype.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +9,43 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
 {
     class GrantAccessRequest : BaseRequest
     {
+        // Implementation-specific properties
+        [DMLEntry(Section.Cards, EntryName = "PIN")]
+        public long? Pin { get; private set; }
+
+        [DMLEntry(Section.Cards, EntryName = "NumUses")]
+        public long? NumberOfUses { get; private set; }
+
+        [DMLEntry(Section.Cards, EntryName = "StartDate")]
+        public DateTime? StartDate { get; private set; }
+
+        [DMLEntry(Section.Cards, EntryName = "StopDate")]
+        public DateTime? StopDate { get; private set; }
+
+        [DMLEntry(Section.Cards, EntryName = "AddAcl")]
+        public IList<string> AccessLevels { get; private set; }
+
         /// <summary>
         /// A Grant Accesss request whose content can be used to instruct to DSX to grant access levels to a card holder's access card
         /// </summary>
         /// <param name="builder">The builder used to construct the Grant Access request.</param>
-        private GrantAccessRequest(GrantAccessRequestBuilder builder) : base(builder) { }
+        private GrantAccessRequest(GrantAccessRequestBuilder builder) : base(builder) 
+        {
+            Pin = builder.Pin;
+            NumberOfUses = builder.NumberOfUses;
+            StartDate = builder.StartDate;
+            StopDate = builder.StopDate;
+            AccessLevels = builder.AccessLevels;
+        }
 
         internal sealed class GrantAccessRequestBuilder : BaseRequestBuilder
         {
-            // Implementation-specific properties
-            [DMLEntry(Section.Cards, EntryName = "PIN")]
-            private long? Pin { get; set; }
-
-            [DMLEntry(Section.Cards, EntryName = "NumUses")]
-            private long? NumberOfUses { get; set; }
-
-            [DMLEntry(Section.Cards, EntryName = "StartDate")]
-            private DateTime? StartDate { get; set; }
-
-            [DMLEntry(Section.Cards, EntryName = "StopDate")]
-            private DateTime? StopDate { get; set; }
-
-            [DMLEntry(Section.Cards, EntryName = "AddAcl")]
-            private IList<string> AccessLevels { get; set; }
+            // Implementation-specific properties            
+            public long? Pin { get; private set; }            
+            public long? NumberOfUses { get; private set; }            
+            public DateTime? StartDate { get; private set; }            
+            public DateTime? StopDate { get; private set; }            
+            public IList<string> AccessLevels { get; private set; }
 
             /// <summary>
             /// Initializes a builder that helps construct a Grant Access request for DSX.
@@ -152,36 +165,6 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <returns>A Grant Access request for DSX.</returns>
             public override BaseRequest Build()
             {
-                //var aclLevels = new List<Tuple<string, string>>();
-                //foreach (var level in AccessLevels)
-                //{
-                //    aclLevels.Add(new Tuple<string, string>("AddAcl", level));
-                //}
-
-                //// Do converstion into DML here                
-                //var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
-                //.OpenTable("Names")
-                //.AddField("FName", FirstName)
-                //.AddField("LName", LastName)
-                //.AddField("Company", Company)
-                //.CloseTableWithWrite()
-                //.OpenTable("UDF")
-                //.AddField("UdfNum", UdfFieldNumber)
-                //.AddField("UdfText", UdfFieldData)
-                //.CloseTableWithWrite()
-                //.OpenTable("Cards")
-                //.AddField("Code", Code)
-                //.AddField("PIN", Pin)                
-                //.AddField("StartDate", StartDate)
-                //.AddField("StopDate", StopDate)
-                //.AddField("NumUses", NumberOfUses)
-                //.AddField(aclLevels)
-                //.CloseTableWithWrite();
-
-                //RequestContent = dataBuilder.Output.ToString();
-
-                // Serialize the builder and return the request
-                RequestContent = DMLConvert.SerializeObject(this);
                 return new GrantAccessRequest(this);
             }
         }

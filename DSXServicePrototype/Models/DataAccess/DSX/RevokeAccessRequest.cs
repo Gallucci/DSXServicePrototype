@@ -1,5 +1,4 @@
 ﻿using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
-using DSXServicePrototype.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,14 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
 {
     class RevokeAccessRequest : BaseRequest
     {
-        private RevokeAccessRequest(RevokeAccessRequestBuilder builder) : base(builder) { }
+        // Implementation-specific properties
+        [DMLEntry(Section.Cards, EntryName = "DelAcl")]
+        public IList<string> AccessLevels { get; private set; }
+
+        private RevokeAccessRequest(RevokeAccessRequestBuilder builder) : base(builder) 
+        {
+            AccessLevels = builder.AccessLevels;
+        }
 
         /// <summary>
         /// A Revoke Accesss request whose content can be used to instruct to DSX to revoke access levels from a card holder's access card
@@ -18,9 +24,8 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
         /// <param name="builder">The builder used to construct the Revoke Access request.</param>
         internal sealed class RevokeAccessRequestBuilder : BaseRequestBuilder
         {
-            // Implementation-specific properties
-            [DMLEntry(Section.Cards, EntryName = "DelAcl")]
-            private IList<string> AccessLevels { get; set; }
+            // Implementation-specific properties            
+            public IList<string> AccessLevels { get; private set; }
 
             /// <summary>
             /// Initializes a builder that helps construct a Revoke Access request for DSX.
@@ -92,32 +97,6 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
             /// <returns>A Revoke Access request for DSX.</returns>
             public override BaseRequest Build()
             {                
-                //var aclLevels = new List<Tuple<string, string>>();
-                //foreach (var level in AccessLevels)
-                //{
-                //    aclLevels.Add(new Tuple<string, string>("DelAcl", level));
-                //}
-                
-                //// Do converstion into DML here
-                //var dataBuilder = new DMLDataFormat.FormatBuilder(LocationGroupNumber, UdfFieldNumber, UdfFieldData)
-                //.OpenTable("Names")
-                //.AddField("FName", FirstName)
-                //.AddField("LName", LastName)
-                //.AddField("Company", Company)
-                //.CloseTableWithWrite()
-                //.OpenTable("UDF")
-                //.AddField("UdfNum", UdfFieldNumber)
-                //.AddField("UdfText", UdfFieldData)
-                //.CloseTableWithWrite()
-                //.OpenTable("Cards")
-                //.AddField("Code", Code)
-                //.AddField(aclLevels)
-                //.CloseTableWithWrite();
-
-                //RequestContent = dataBuilder.Output.ToString();
-
-                // Serialize the builder and return the request
-                RequestContent = DMLConvert.SerializeObject(this);
                 return new RevokeAccessRequest(this);
             }
         }
