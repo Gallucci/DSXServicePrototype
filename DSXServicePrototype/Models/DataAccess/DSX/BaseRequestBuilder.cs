@@ -29,8 +29,8 @@ namespace DSXServicePrototype.Models.DataAccess.DSX
         /// <param name="code">The access card number.</param>
         protected BaseRequestBuilder(string firstName, string lastName, string company, long code)
         {            
-            LocationGroupNumber = 1;
-            UdfFieldNumber = 2;
+            LocationGroupNumber = ConfigHelper.GetIntValue("DefaultLocationGroupNumber");
+            UdfFieldNumber = ConfigHelper.GetIntValue("DefaultUdfFieldNumber");
             UdfFieldData = code.ToString();
             FirstName = firstName;
             LastName = lastName;

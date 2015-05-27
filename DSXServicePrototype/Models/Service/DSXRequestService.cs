@@ -23,8 +23,8 @@ namespace DSXServicePrototype.Models.Service
         {
             try
             {
-                var writer = new DMLRequestFileWriter(request);
-                writer.WriteRequest();
+                var writer = new DMLRequestFileWriter();
+                writer.WriteRequest(request);
 
                 // Return response
                 var apiResponse = new ApiResponse() 

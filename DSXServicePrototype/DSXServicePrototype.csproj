@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigHelper.cs" />
+    <Compile Include="IOHelper.cs" />
     <Compile Include="Models\DataAccess\DSX\BaseRequest.cs" />
     <Compile Include="Models\DataAccess\DSX\BaseRequestBuilder.cs" />
     <Compile Include="Models\DataAccess\DSX\ChangePinRequest.cs" />

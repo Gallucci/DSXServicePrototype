@@ -10,64 +10,83 @@ using System.Threading.Tasks;
 namespace DSXServicePrototype.Models.Service
 {
     class DMLRequestFileWriter
-    {
-        public string FileBaseName { get; set; }
-        public string FileDirectory { get; set; }
-        public string FileExtension { get; set; }
-        private bool IsTimeStamped { get; set; }
-        private BaseRequest Request { get; set; }
+    {        
+        public string DepositDirectory { get; set; }        
 
-        public DMLRequestFileWriter(BaseRequest request)
+        /// <summary>
+        /// Constructs a default DML file writer with default values as described in the application settings.
+        /// </summary>
+        public DMLRequestFileWriter()
         {
-            Request = request;
-            Initialize();    
+            DepositDirectory = ConfigHelper.GetStringValue("DefaultRequestDepositDirectory");            
         }
 
-        private void Initialize() 
+        /// <summary>
+        /// Constructs a DML file writer that uses the specified directory as the repository location for DML files.
+        /// </summary>
+        /// <param name="despositDirectory">The directory path to serve as the DML repository location.  If the path does not exist, the writer will attempt to create it.</param>
+        public DMLRequestFileWriter(string despositDirectory)
         {
-            FileBaseName = Request.GetType().Name;
-            FileDirectory = @"C:\ETACC\Requests";
-            FileExtension = "txt";
-            IsTimeStamped = true;
+            DepositDirectory = despositDirectory;
         }
-
-        private string GenerateDSXFilename()
+        
+        /// <summary>
+        /// Formats a filename into a proper filename as defined by the DSX file name specification.
+        /// </summary>
+        /// <param name="baseFileName">Name of the file.</param>
+        /// <param name="isTimeStamped">If true, a date in yyyydddMMHHmmss format will be prepended to the file name.</param>
+        /// <returns>The formatted file name.</returns>
+        private string GenerateDSXFilename(string baseFileName, bool isTimeStamped)
         {
-            var pattern = "yyyyddMMHHmmss";
-            var date = DateTime.Now.ToString(pattern);
-            var type = Request.GetType().Name;
+            var dataPattern = "yyyyddMMHHmmss";
+            var formattedDate = DateTime.Now.ToString(dataPattern);
 
-            if (IsTimeStamped)
-                return string.Format("^imp_{0}_{1}", date, type);
+            if (isTimeStamped)
+                return string.Format("^imp_{0}_{1}", formattedDate, baseFileName);
             else
-                return string.Format("^imp_{0}", type);
+                return string.Format("^imp_{0}", baseFileName);
         }
 
-        public void WriteRequest(bool isTimeStamped = true)
+        /// <summary>
+        /// Writes a DML request file to the location specified by the writter's settings.
+        /// </summary>
+        /// <param name="obj">The object to write into a DML file.</param>
+        /// <param name="customFileName">Overrides the default file name with the specified name.  Default protocol is to use the class name of the object to be written.</param>
+        /// <param name="isTimeStamped">If true, the file name will be prepended by a date in yyyydddMMHHmmss format.</param>
+        public void WriteRequest(object obj, string customFileName = null, bool isTimeStamped = true)
         {
-            IsTimeStamped = isTimeStamped;
+            // Get the file name
+            string fileName;            
+            if (string.IsNullOrEmpty(customFileName))
+                fileName = obj.GetType().Name;
+            else
+                fileName = customFileName;
 
-            var filename = GenerateDSXFilename();
-            var path = Path.Combine(FileDirectory, string.Format("{0}.{1}", filename, FileExtension));
+            // Construct the full path
+            fileName = GenerateDSXFilename(fileName, isTimeStamped);
+            var fileExtension = "txt";
+            var path = Path.Combine(DepositDirectory, fileName);
+            var fullPath = Path.ChangeExtension(path, fileExtension);
 
-            // TO DO:  Need to create path if it doesn't exist
-            if (!Directory.Exists(FileDirectory))
-                Directory.CreateDirectory(FileDirectory);
+            // If the path doesn exist then create it
+            if (!Directory.Exists(DepositDirectory))
+                Directory.CreateDirectory(DepositDirectory);
 
             // Counter in case of duplicate filenames
             var count = 1;
 
             //If a file with the same name exists, append a number to the end
-            while (File.Exists(path))
+            while (File.Exists(fullPath))
             {
                 count++;
-                var newFilename = string.Format("{0}_{1}", filename, count.ToString());
-                path = Path.Combine(FileDirectory, newFilename + FileExtension);
+                var newFilename = string.Format("{0}_{1}", fileName, count.ToString());
+                path = Path.Combine(DepositDirectory, newFilename);
+                fullPath = Path.ChangeExtension(path, fileExtension);
             }
 
             // Write data            
-            var data = DMLConvert.SerializeObject(Request);
-            File.WriteAllText(path, data);
+            var data = DMLConvert.SerializeObject(obj);
+            File.WriteAllText(fullPath, data);
         }
     }
 }
