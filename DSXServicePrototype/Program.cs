@@ -1,6 +1,5 @@
 ﻿using DSXServicePrototype.Models.DataAccess.DSX;
 using DSXServicePrototype.Models.DataAccess.DSX.Serialization;
-using DSXServicePrototype.Models.Domain;
 using DSXServicePrototype.Models.Service;
 using System;
 using System.Collections.Generic;

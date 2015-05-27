@@ -55,25 +55,16 @@
     <Compile Include="Models\DataAccess\DSX\Serialization\DMLConvert.cs" />
     <Compile Include="Models\DataAccess\DSX\Serialization\DMLFieldAttribute.cs" />
     <Compile Include="Models\DataAccess\DSX\Serialization\DMLIdentifierAttribute.cs" />
-    <Compile Include="Models\Domain\DMLDataFormat.cs" />
-    <Compile Include="Models\Domain\DMLRequestSerializer.cs" />
-    <Compile Include="Models\Domain\DSXRequest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Models\Domain\IDataFormat.cs" />
-    <Compile Include="Models\Domain\IRequestSerializer.cs" />
-    <Compile Include="Models\Domain\JSONRequestSerializer.cs" />
-    <Compile Include="Models\Domain\TempStudent.cs" />
-    <Compile Include="Models\Domain\XMLRequestSerializer.cs" />
-    <Compile Include="Models\Service\ApiResponse.cs" />
     <Compile Include="Models\Service\DMLRequestFileWriter.cs" />
-    <Compile Include="Models\Service\DSXRequestService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\Domain\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
