@@ -26,19 +26,19 @@ namespace DSXServicePrototype
             Console.WriteLine(output);
             Console.WriteLine(service.GetResponse(request).Message);
 
-            request = new GrantAccessRequest.GrantAccessRequestBuilder("Test", "Dummy", "Summer Student", 90202705124)
+            request = new GrantAccessRequest.GrantAccessRequestBuilder("Test", "Dummy", "MZMO Student", 90202705124)
                 .AccessBeginsOn(DateTime.Now)
                 .AccessStopsOn(DateTime.Now.AddDays(3))
                 .SetPin(4444)
-                .GrantAccessLevel("Summer Student")
+                .GrantAccessLevel("GILA Student")
                 .Build();
 
             output = DMLConvert.SerializeObject(request);
             Console.WriteLine(output);
             Console.WriteLine(service.GetResponse(request).Message);
 
-            request = new RevokeAccessRequest.RevokeAccessRequestBuilder("Test", "Dummy", "COCO Student", 90202705124)
-                .RevokeAccessLevel(new List<string>() { "COCO Student", "COCO RA" })
+            request = new RevokeAccessRequest.RevokeAccessRequestBuilder("Test", "Dummy", "GILA Student", 90202705124)
+                .RevokeAccessLevel(new List<string>() { "GILA Student", "GILA RA" })
                 .Build();
 
             output = DMLConvert.SerializeObject(request);

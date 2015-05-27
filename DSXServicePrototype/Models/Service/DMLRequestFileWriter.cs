@@ -27,7 +27,7 @@ namespace DSXServicePrototype.Models.Service
         {
             FileBaseName = Request.GetType().Name;
             FileDirectory = @"C:\ETACC\Requests";
-            FileExtension = ".txt";
+            FileExtension = "txt";
             IsTimeStamped = true;
         }
 
@@ -48,7 +48,7 @@ namespace DSXServicePrototype.Models.Service
             IsTimeStamped = isTimeStamped;
 
             var filename = GenerateDSXFilename();
-            var path = Path.Combine(FileDirectory, filename + FileExtension);            
+            var path = Path.Combine(FileDirectory, string.Format("{0}.{1}", filename, FileExtension));
 
             // TO DO:  Need to create path if it doesn't exist
             if (!Directory.Exists(FileDirectory))
@@ -65,10 +65,9 @@ namespace DSXServicePrototype.Models.Service
                 path = Path.Combine(FileDirectory, newFilename + FileExtension);
             }
 
-            // Write data
-            //var data = Request.Content;
+            // Write data            
             var data = DMLConvert.SerializeObject(Request);
-            //File.WriteAllText(path, data);
+            File.WriteAllText(path, data);
         }
     }
 }

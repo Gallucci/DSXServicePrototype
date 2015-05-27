@@ -19,6 +19,8 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         private static DSXTable udf;
         private static DSXTable images;
         private static DSXTable cards;
+        private static IList<string> namesSortOrder;
+        private static IList<string> cardsSortOrder;
 
         /// <summary>
         /// Static class constructor.
@@ -40,6 +42,47 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
             udf = new DSXTable("UDF");
             images = new DSXTable("Images");
             cards = new DSXTable("Cards");
+
+            // Defines the field order for the Names table (Fields not in this list come last)
+            // Case sensitive!
+            namesSortOrder = new List<string>()
+            {
+                "FName",
+                "LName",
+                "Company",
+                "Visitor",
+                "Trace",
+                "Notes"
+            };
+            
+            // Defines the field order for the Cards table (Fields not in this list come last)
+            // The "Code" field is the only field that *must* come first in the Cards table, the rest
+            // are for aesthetics/convenience.
+            // Case sensitive!
+            cardsSortOrder = new List<string>() 
+            {
+                "Code",
+                "ReplaceCode",
+                "Copy2Code",
+                "PIN",
+                "StartDate",
+                "StopDate",
+                "CardNum",
+                "NumUses",
+                "GTour",
+                "APB",
+                "ClearAcl",
+                "ClearTempAcl",
+                "AddAcl",
+                "AddTempAcl",
+                "AclStartDate",
+                "AclStopDate",
+                "DelAcl",
+                "DelTempAcl",
+                "Loc",
+                "OLL",
+                "Notes"
+            };
         }
 
         /// <summary>
@@ -58,11 +101,15 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
             // Parse the object for properties with DML Field decorators
             GetDMLFieldsFromObject(obj);
 
+            // Sort tables that require sorting
+            names.Sort(namesSortOrder);
+            cards.Sort(cardsSortOrder);
+
             // Begin serialization
-            output.Append(identifier.ToString());
-            output.Append(names.ToString());
+            output.Append(identifier.ToString());                        
+            output.Append(names.ToString());            
             output.Append(udf.ToString());
-            output.Append(images.ToString());
+            output.Append(images.ToString());                        
             output.Append(cards.ToString());
             
             // Return the serialized object
@@ -157,22 +204,22 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
                     {
                         switch (tableName)
                         {
-                            case TableName.Names:
-                                names.Entries.Add(new Tuple<string, object>(fieldName, value));
+                            case TableName.Names:                                
+                                names.Entries.Add(new Entry(fieldName, value));
                                 break;
-                            case TableName.UDF:
-                                udf.Entries.Add(new Tuple<string, object>(fieldName, value));
+                            case TableName.UDF:                                
+                                udf.Entries.Add(new Entry(fieldName, value));
                                 break;
-                            case TableName.Images:
-                                images.Entries.Add(new Tuple<string, object>(fieldName, value));
+                            case TableName.Images:                                
+                                images.Entries.Add(new Entry(fieldName, value));
                                 break;
-                            case TableName.Cards:
-                                cards.Entries.Add(new Tuple<string, object>(fieldName, value));
+                            case TableName.Cards:                                
+                                cards.Entries.Add(new Entry(fieldName, value));
                                 break;
                         }
                     }
                 }
-            }
+            }            
         }                
     }
 
@@ -215,9 +262,9 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
     /// </summary>
     class DSXTable
     {
-        public string Name { get; private set; }
-        public IList<Tuple<string, object>> Entries { get; private set; }
-        private StringBuilder Output { get; set; }
+        public string Name { get; private set; }        
+        public IList<Entry> Entries { get; private set; }
+        private StringBuilder Output { get; set; }        
 
         /// <summary>
         /// Constructs a representation of a DSX Table for DML export.
@@ -225,8 +272,8 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         /// <param name="name"></param>
         public DSXTable(string name)
         {
-            Name = name;
-            Entries = new List<Tuple<string, object>>();
+            Name = name;            
+            Entries = new List<Entry>();
             Output = new StringBuilder();
         }
 
@@ -237,11 +284,11 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         public override string ToString()
         {
             if (Entries.Any())
-            {
+            {                                                                
                 OpenTable(Name);
                 foreach (var entry in Entries)
                 {
-                    AddField(entry.Item1, entry.Item2);
+                    AddField(entry.Name, entry.Value);
                 }
                 CloseTableWithWrite();
             }
@@ -250,7 +297,19 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         }
 
         /// <summary>
-        /// Formats a DateTime into a value acceptable by DSX
+        /// Sorts the Entries by field name (case sensitive) as prescribed by an order list.
+        /// </summary>
+        /// <param name="sortOrder">The list defining the order in which the table entries should be displayed.</param>
+        public void Sort(IList<string> sortOrder)
+        {
+            if (Entries.Any())
+            {                
+                (Entries as List<Entry>).Sort(new EntryComparer(sortOrder));
+            }
+        }
+
+        /// <summary>
+        /// Formats a DateTime into a value acceptable by DSX.
         /// </summary>
         /// <param name="value">The date/time to be formatted.</param>
         /// <returns>The string output of the date/time in DML format.</returns>
@@ -261,7 +320,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         }
 
         /// <summary>
-        /// Formats a boolean into a value acceptable by DSX
+        /// Formats a boolean into a value acceptable by DSX.
         /// </summary>
         /// <param name="value">The boolean to be formatted.</param>
         /// <returns>The string output of the boolean in DML format.</returns>
@@ -347,5 +406,62 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         /// Adds a DSX Close Table and Update Data in DSX entry in DML format to the format.
         /// </summary>
         private void CloseTableWithUpdate() { Output.AppendLine("U"); }
+    }
+
+    /// <summary>
+    /// Helper class that represents an entry in a DSX Table
+    /// </summary>
+    class Entry
+    {
+        public string Name {get; private set;}
+        public object Value { get; private set; }
+
+        /// <summary>
+        /// Constructs an Entry for a DSX Table
+        /// </summary>
+        /// <param name="name">The of the entry as it will appear in the DSX request.</param>
+        /// <param name="value">The value of the entry.</param>
+        public Entry(string name, object value)
+        {
+            Name = name;
+            Value = value;
+        }
+    }
+
+    /// <summary>
+    /// Helper comparer class that compares a list of Entry objects to each other via name, using their placement in another list to determine order.
+    /// </summary>
+    class EntryComparer : IComparer<Entry>
+    {
+        private IList<string> OrderList { get; set; }
+
+        /// <summary>
+        /// Creates the comparer for comparing the Entry source list to the order list.
+        /// </summary>
+        /// <param name="otherList">The list whose order will be mimicked by the order list.</param>
+        public EntryComparer(IList<string> orderList)
+        {
+            OrderList = orderList;
+        }
+
+        /// <summary>
+        /// Compares two entries' index positions within the order list.
+        /// </summary>
+        /// <param name="a">The first entry.</param>
+        /// <param name="b">The second entry.</param>
+        /// <returns>The order in which the two entries should be placed within the Entry list in relation to each other.</returns>
+        public int Compare(Entry a, Entry b)
+        {
+            if (OrderList.Contains(a.Name) && !OrderList.Contains(b.Name))
+                return -1;
+
+            if (!OrderList.Contains(a.Name) && OrderList.Contains(b.Name))
+                return 1;
+
+            if (!OrderList.Contains(a.Name) && !OrderList.Contains(b.Name))
+                return 0;
+
+            return OrderList.IndexOf(a.Name) - OrderList.IndexOf(b.Name);
+        }
     }
 }
