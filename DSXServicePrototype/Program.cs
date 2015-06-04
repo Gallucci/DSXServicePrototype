@@ -14,17 +14,39 @@ namespace DSXServicePrototype
     {
         static void Main(string[] args)
         {
-            // TODO:  Create a Change Pin request
+            // DML file writer
+            var writer = new DMLRequestFileWriter();
+            string output;
 
-            // TODO:  Create a Revoke Access request
+            // Change Pin request
+            var request = new ChangePinRequest.ChangePinRequestBuilder("Test", "Dummy", "MZMO Student", 90202705124)
+                .SetPin(4545)
+                .Build();
 
-            // TODO:  Create a Grant Access request
+            output = DMLConvert.SerializeObject(request);
+            Console.WriteLine(output);
+            writer.WriteRequest(request);
 
-            // TODO:  Output the serialization of each request
+            // Grant Access request
+            request = new GrantAccessRequest.GrantAccessRequestBuilder("Test", "Dummy", "MZMO Student", 90202705124)
+                .AccessBeginsOn(DateTime.Now)
+                .AccessStopsOn(DateTime.Now.AddDays(3))
+                .SetPin(4444)
+                .GrantAccessLevel("GILA Student")
+                .Build();
 
-            // TODO:  Write each request to a file
+            output = DMLConvert.SerializeObject(request);
+            Console.WriteLine(output);
+            writer.WriteRequest(request);
 
-            // BONUS:  Write a new type of request that inherits from the base request
+            // Revoke Access request
+            request = new RevokeAccessRequest.RevokeAccessRequestBuilder("Test", "Dummy", "GILA Student", 90202705124)
+                .RevokeAccessLevel(new List<string>() { "GILA Student", "GILA RA" })
+                .Build();
+
+            output = DMLConvert.SerializeObject(request);
+            Console.WriteLine(output);
+            writer.WriteRequest(request); 
 
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey(); 

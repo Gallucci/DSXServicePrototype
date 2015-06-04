@@ -96,7 +96,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
             Initialize();
             
             // Parse the object for properties with DML Identifier decorators
-            GetDMLIdentifiersComponentsFromObject(obj);
+            GetDMLIdentifiersFromObject(obj);
 
             // Parse the object for properties with DML Field decorators
             GetDMLFieldsFromObject(obj);
@@ -120,7 +120,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         /// Examines an object for DML Identifier attributes and places their data into a DSX Identifier
         /// </summary>
         /// <param name="obj">The object from which to pull DML Identifier information.</param>
-        private static void GetDMLIdentifiersComponentsFromObject(object obj)
+        private static void GetDMLIdentifiersFromObject(object obj)
         {
             var type = obj.GetType();
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -313,7 +313,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         /// </summary>
         /// <param name="value">The date/time to be formatted.</param>
         /// <returns>The string output of the date/time in DML format.</returns>
-        private static string FormatDSXDate(DateTime value)
+        private string FormatDSXDate(DateTime value)
         {
             var pattern = "M/d/yyyy HH:mm";
             return value.ToString(pattern);
@@ -324,7 +324,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         /// </summary>
         /// <param name="value">The boolean to be formatted.</param>
         /// <returns>The string output of the boolean in DML format.</returns>
-        private static string FormatDSXBoolean(bool value)
+        private string FormatDSXBoolean(bool value)
         {
             if (value)
                 return "1";
@@ -337,7 +337,7 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         /// </summary>
         /// <param name="name">The field name of the entry.</param>
         /// <param name="value">The field value of the entry.</param>
-        private void WriteEntryLine(string name, string value) { Output.AppendLine(string.Format("F {0} ^{1}^^^", name, value)); }
+        private void WriteField(string name, string value) { Output.AppendLine(string.Format("F {0} ^{1}^^^", name, value)); }
 
         /// <summary>
         /// Adds a DSX open table entry in DML format to the format.
@@ -356,34 +356,34 @@ namespace DSXServicePrototype.Models.DataAccess.DSX.Serialization
         {
             if (value is DateTime)
             {
-                WriteEntryLine(name, FormatDSXDate((DateTime)(object)value));
+                WriteField(name, FormatDSXDate((DateTime)(object)value));
             }
             else if (value is DateTime?)
             {
                 if ((value as DateTime?).HasValue)
-                    WriteEntryLine(name, FormatDSXDate((DateTime)(object)value));
+                    WriteField(name, FormatDSXDate((DateTime)(object)value));
             }
             else if (value is bool)
             {
-                WriteEntryLine(name, FormatDSXBoolean((bool)(object)value));
+                WriteField(name, FormatDSXBoolean((bool)(object)value));
             }
             else if (value is bool?)
             {
                 if ((value as bool?).HasValue)
-                    WriteEntryLine(name, FormatDSXBoolean((bool)(object)value));
+                    WriteField(name, FormatDSXBoolean((bool)(object)value));
             }
             else if (value is ICollection)
             {
                 var list = value as ICollection;
                 foreach (var item in list)
                 {
-                    WriteEntryLine(name, item.ToString().Trim());
+                    WriteField(name, item.ToString().Trim());
                 }
             }
             else
             {
                 if (value != null)
-                    WriteEntryLine(name, value.ToString().Trim());
+                    WriteField(name, value.ToString().Trim());
             }
         }
 
